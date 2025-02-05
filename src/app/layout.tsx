@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/header/header";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={``}>
-        <Header />
-        {children}
+        <SessionProvider>
+          <Header />
+          {children}
+          <Toaster />
+        </SessionProvider>
       </body>
     </html>
   );
