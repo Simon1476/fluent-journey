@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/app/auth";
+import { signIn, signOut } from "@/auth";
 
 export async function handleKakaoSignin() {
   await signIn("kakao", { redirectTo: "/" });
