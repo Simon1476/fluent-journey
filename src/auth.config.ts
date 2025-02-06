@@ -1,13 +1,12 @@
 import { KakaoProfile } from "@/types/kakaoProfile";
-import NextAuth from "next-auth";
 import Kakao from "next-auth/providers/kakao";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+import type { NextAuthConfig } from "next-auth";
+
+export default {
   providers: [Kakao],
   callbacks: {
     async jwt({ token, account, profile }) {
-      console.log("account=", account);
-      console.log("profile=", profile);
       if (account && profile) {
         const kakaoProfile = profile as unknown as KakaoProfile;
         token.accessToken = account.access_token;
@@ -27,4 +26,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-});
+} satisfies NextAuthConfig;
