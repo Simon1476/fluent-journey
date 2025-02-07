@@ -8,13 +8,14 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  wordLists     UserWordList[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -43,14 +44,15 @@ model Account {
 }
 
 model Word {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
   english       String
   korean        String
   level         String
   category      String?
   example       String?
   pronunciation String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime   @default(now())
+  UserWord      UserWord[]
 }
 
 model Session {
@@ -71,4 +73,29 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model UserWordList {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @db.ObjectId
+  name      String // 단어장 이름 (예: "TOEIC 단어", "자주 틀리는 단어" 등)
+  words     UserWord[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserWord {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  wordListId   String    @db.ObjectId
+  wordId       String    @db.ObjectId
+  status       String? // 'known', 'learning', 'difficult' 등
+  lastReviewed DateTime?
+  reviewCount  Int       @default(0)
+  note         String? // 사용자가 추가하는 개인 노트
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  wordList UserWordList @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  word     Word         @relation(fields: [wordId], references: [id])
 }
