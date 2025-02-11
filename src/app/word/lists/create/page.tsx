@@ -1,4 +1,4 @@
-import CreateWordListForm from "@/components/word/CreateWordListForm";
+import CreateWordListForm from "@/features/wordlists/components/form/CreateWordListForm";
 
 export default async function CreateVocabularyListPage() {
   return (

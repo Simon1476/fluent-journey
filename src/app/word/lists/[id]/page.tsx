@@ -1,6 +1,8 @@
-import { getWordListById } from "@/lib/actions/wordlist";
+import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddWordModal } from "@/components/word/AddWordModal";
+import { getWordListById } from "@/features/wordlists/server/db/wordlists";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -9,7 +11,13 @@ interface Props {
 export default async function WordListPage({ params }: Props) {
   const id = (await params).id;
 
-  const wordList = await getWordListById(id);
+  const session = await auth();
+  if (!session) {
+    redirect("/signin");
+  }
+
+  const accountId = session.user.id;
+  const wordList = await getWordListById(accountId, id);
 
   if (!wordList) {
     return <div>단어장을 찾을 수 없습니다.</div>;
@@ -53,7 +61,7 @@ export default async function WordListPage({ params }: Props) {
       {wordList.words.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">아직 추가된 단어가 없습니다.</p>
-          <AddWordModal listId={params.id} />
+          <AddWordModal listId={id} />
         </div>
       )}
     </div>

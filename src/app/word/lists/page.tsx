@@ -1,19 +1,19 @@
 import { auth } from "@/auth";
-import { getWordLists } from "@/lib/actions/wordlist";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, Book } from "lucide-react";
 import { redirect } from "next/navigation";
+import { getWordLists } from "@/features/wordlists/server/db/wordlists";
 
 export default async function WordListsPage() {
   const session = await auth();
-
   if (!session) {
-    redirect("/signin2");
+    redirect("/signin");
   }
 
-  const lists = await getWordLists();
+  const accountId = session.user.id;
+  const lists = await getWordLists(accountId);
 
   return (
     <div className="container mx-auto px-4 py-8">

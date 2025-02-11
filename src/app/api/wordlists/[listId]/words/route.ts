@@ -1,4 +1,6 @@
-import { addWordToList } from "@/lib/actions/wordlist";
+import { auth } from "@/auth";
+import { addWordToList } from "@/features/wordlists/server/actions/wordlists";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -16,6 +18,10 @@ export async function POST(
 ) {
   const { listId } = params;
 
+  const session = await auth();
+  if (!session) return redirect("/signin");
+  const accountId = session.user.id;
+
   const body = await request.json();
   const result = wordSchema.safeParse(body);
 
@@ -23,7 +29,7 @@ export async function POST(
     return NextResponse.json({ errors: result.error.errors }, { status: 400 });
   }
 
-  await addWordToList(listId, result.data);
+  await addWordToList(accountId, listId, result.data);
 
   return NextResponse.json(
     { message: "단어가 성공적으로 추가되었습니다." },

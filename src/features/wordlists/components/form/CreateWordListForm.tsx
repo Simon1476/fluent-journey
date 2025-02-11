@@ -15,7 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { createWordList } from "@/lib/actions/wordlist";
+import { createWordList } from "@/features/wordlists/server/actions/wordlists";
+import { useSession } from "next-auth/react";
 
 const WordListSchema = z.object({
   title: z.string().min(1, "제목을 입력해주세요"),
@@ -23,7 +24,15 @@ const WordListSchema = z.object({
 });
 
 export default function CreateWordListForm() {
+  const { data: session } = useSession();
   const router = useRouter();
+
+  if (!session) {
+    router.push("/signin");
+  }
+
+  const accountId = session?.user.id;
+
   const form = useForm<z.infer<typeof WordListSchema>>({
     resolver: zodResolver(WordListSchema),
     defaultValues: {
@@ -33,8 +42,9 @@ export default function CreateWordListForm() {
   });
 
   async function onSubmit(values: z.infer<typeof WordListSchema>) {
+    if (!accountId) return;
     try {
-      const list = await createWordList(values);
+      const list = await createWordList(accountId, values);
       router.push(`/word/lists/${list.id}`);
     } catch (error) {
       console.error("단어장 생성 실패:", error);
