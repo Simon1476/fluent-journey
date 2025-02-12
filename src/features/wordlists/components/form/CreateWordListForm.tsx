@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,40 +15,27 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
+
 import { createWordList } from "@/features/wordlists/server/actions/wordlists";
-import { useSession } from "next-auth/react";
-
-const WordListSchema = z.object({
-  title: z.string().min(1, "제목을 입력해주세요"),
-  description: z.string().optional(),
-});
-
+import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
 export default function CreateWordListForm() {
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  if (!session) {
-    router.push("/signin");
-  }
-
-  const accountId = session?.user.id;
-
-  const form = useForm<z.infer<typeof WordListSchema>>({
-    resolver: zodResolver(WordListSchema),
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof wordListCreateSchema>>({
+    resolver: zodResolver(wordListCreateSchema),
     defaultValues: {
       title: "",
       description: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof WordListSchema>) {
-    if (!accountId) return;
-    try {
-      const list = await createWordList(accountId, values);
-      router.push(`/word/lists/${list.id}`);
-    } catch (error) {
-      console.error("단어장 생성 실패:", error);
+  async function onSubmit(values: z.infer<typeof wordListCreateSchema>) {
+    const data = await createWordList(values);
+    if (data.message) {
+      toast({
+        title: data.error ? "Error" : "Success",
+        description: data.message,
+        variant: data.error ? "destructive" : "default",
+      });
     }
   }
 
