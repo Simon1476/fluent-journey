@@ -27,29 +27,24 @@ import {
 } from "@/components/ui/select";
 import { Book, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
+import { createWord } from "../server/actions/wordlists";
 
-const wordFormSchema = z.object({
-  english: z.string().min(1, "영단어를 입력해주세요"),
-  korean: z.string().min(1, "한글 뜻을 입력해주세요"),
-  pronunciation: z.string().optional(),
-  level: z.string().min(1, "난이도를 선택해주세요"),
-  example: z.string().optional(),
-});
-
-interface AddWordModalProps {
+interface Props {
   listId: string;
 }
 
-export function AddWordModal({ listId }: AddWordModalProps) {
+export function CreateWordModal({ listId }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
-  const form = useForm<z.infer<typeof wordFormSchema>>({
-    resolver: zodResolver(wordFormSchema),
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof wordListWordSchema>>({
+    resolver: zodResolver(wordListWordSchema),
     defaultValues: {
       english: "",
       korean: "",
@@ -59,27 +54,20 @@ export function AddWordModal({ listId }: AddWordModalProps) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof wordFormSchema>) {
-    try {
-      // TODO: API 구현 필요
-      const response = await fetch(`/api/wordlists/${listId}/words`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+  async function onSubmit(values: z.infer<typeof wordListWordSchema>) {
+    const data = await createWord(listId, values);
+
+    if (data) {
+      toast({
+        title: data.error ? "Error" : "Success",
+        description: data.message,
+        variant: data.error ? "destructive" : "default",
       });
-
-      if (!response.ok) {
-        throw new Error("단어 추가 실패");
-      }
-
-      form.reset();
-      setOpen(false);
-      router.refresh();
-    } catch (error) {
-      console.error("단어 추가 실패:", error);
     }
+
+    form.reset();
+    setOpen(false);
+    router.refresh();
   }
 
   return (

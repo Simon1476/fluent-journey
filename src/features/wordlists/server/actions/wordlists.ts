@@ -1,67 +1,65 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
+import { wordListCreateSchema } from "@/schemas/wordlists";
+import { wordListWordSchema } from "@/schemas/wordlists";
+import { z } from "zod";
+import { redirect } from "next/navigation";
+import {
+  createCustomWord as createCustomWordDb,
+  createUserWord as createUserWordDb,
+} from "@/features/wordlists/server/db/wordlists";
 
 export async function createWordList(
-  accountId: string,
-  data: { title: string }
+  unsafeData: z.infer<typeof wordListCreateSchema>
 ) {
+  const session = await auth();
+  const accountId = session?.user.id;
   const userId = await getUserId(accountId);
 
-  const list = await prisma.userWordList.create({
+  const { success, data } = wordListCreateSchema.safeParse(unsafeData);
+
+  if (!success) {
+    return {
+      error: true,
+      message: "단어장을 생성하는 동안 오류가 발생했습니다.",
+    };
+  }
+
+  const { id } = await prisma.userWordList.create({
     data: {
       name: data.title,
       userId,
     },
   });
 
-  return list;
+  redirect(`/word/lists/${id}`);
 }
 
-export async function addWordToList(
-  accountId: string,
+export async function createWord(
   listId: string,
-  data: {
-    english: string;
-    korean: string;
-    pronunciation?: string;
-    level: string;
-    example?: string;
-  }
+  unsafeData: z.infer<typeof wordListWordSchema>
 ) {
+  const session = await auth();
+  const accountId = session?.user.id;
   const userId = await getUserId(accountId);
 
-  // 단어장 소유자 확인
-  const wordList = await prisma.userWordList.findUnique({
-    where: { id: listId },
-  });
+  const { success, data } = wordListWordSchema.safeParse(unsafeData);
 
-  if (!wordList || wordList.userId !== userId) {
-    throw new Error("접근 권한이 없습니다");
+  if (!success) {
+    return {
+      error: true,
+      message: "단어장에 단어를 추가하지 못했습니다.",
+    };
   }
 
-  // 단어 생성 또는 찾기
-  const word = await prisma.word.create({
-    data: {
-      english: data.english,
-      korean: data.korean,
-      pronunciation: data.pronunciation,
-      level: data.level,
-      example: data.example,
-    },
-  });
+  const customWordId = await createCustomWordDb(data, userId);
+  await createUserWordDb(listId, customWordId);
 
-  // UserWord 생성
-  const userWord = await prisma.userWord.create({
-    data: {
-      wordListId: listId,
-      wordId: word.id,
-    },
-    include: {
-      word: true,
-    },
-  });
-
-  return userWord;
+  return {
+    error: false,
+    message: "단어장에 단어를 추가했습니다.",
+  };
 }
