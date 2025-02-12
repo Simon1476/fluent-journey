@@ -3,8 +3,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
-import { wordListCreateSchema } from "@/schemas/wordlists";
-import { wordListWordSchema } from "@/schemas/wordlists";
+import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
+import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import {

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
-import { wordListWordSchema } from "@/schemas/wordlists";
+import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 
 export async function getWordLists(accountId: string) {
