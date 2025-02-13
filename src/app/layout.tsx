@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className={``}>
         <SessionProvider>
           <Navbar />
-          {children}
+          <div className="mt-16">{children}</div>
           <Toaster />
         </SessionProvider>
       </body>
