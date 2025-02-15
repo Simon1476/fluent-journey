@@ -114,8 +114,8 @@ model UserWord {
   updatedAt    DateTime  @updatedAt
 
   wordList   UserWordList    @relation(fields: [wordListId], references: [id], onDelete: Cascade)
-  word       Word?           @relation(fields: [wordId], references: [id])
-  customWord UserCustomWord? @relation(fields: [customWordId], references: [id])
+  word       Word?           @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  customWord UserCustomWord? @relation(fields: [customWordId], references: [id], onDelete: Cascade)
 
   @@index([wordId])
   @@index([customWordId])
