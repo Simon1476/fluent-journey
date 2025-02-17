@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteWordAlertDialogContent } from "@/features/wordlists/components/DeleteWordButton";
+import { DeleteWordAlertDialogContent } from "@/features/wordlists/components/DeleteWordAlertDialogContent";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
