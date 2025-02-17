@@ -7,12 +7,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function getUserId(accountId: string | undefined) {
-  const account = await prisma.account.findFirstOrThrow({
+  const account = await prisma.account.findFirst({
     where: {
       providerAccountId: String(accountId),
     },
     select: { userId: true },
   });
 
-  return account.userId;
+  return account == null ? null : account.userId;
 }
