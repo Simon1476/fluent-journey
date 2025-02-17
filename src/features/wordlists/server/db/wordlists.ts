@@ -2,7 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
-import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
+import {
+  wordListCreateSchema,
+  wordListWordSchema,
+} from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 import {
   CACHE_TAGS,
@@ -15,6 +18,8 @@ import {
 
 export async function getWordLists(accountId: string) {
   const userId = await getUserId(accountId);
+
+  if (userId == null) return null;
 
   const cacheFn = dbCache(getWordlistsInternal, {
     tags: [
@@ -29,6 +34,8 @@ export async function getWordLists(accountId: string) {
 export async function getWordListById(accountId: string, id: string) {
   const userId = await getUserId(accountId);
 
+  if (userId == null) return null;
+
   const cacheFn = dbCache(getWordlistsByIdInternal, {
     tags: [
       getGlobalTag(CACHE_TAGS.wordlists),
@@ -38,6 +45,48 @@ export async function getWordListById(accountId: string, id: string) {
   });
 
   return cacheFn(id);
+}
+
+export async function createWordlist(
+  userId: string,
+  data: z.infer<typeof wordListCreateSchema>
+) {
+  const newWordlist = await prisma.userWordList.create({
+    data: {
+      name: data.title,
+      userId,
+    },
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: newWordlist.id,
+    userId,
+  });
+
+  return newWordlist;
+}
+
+export async function deleteWordlist(listId: string, userId: string) {
+  try {
+    await prisma.userWordList.delete({
+      where: {
+        id: listId,
+        userId: userId,
+      },
+    });
+
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      id: listId,
+      userId,
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Delete wordlist error:", error);
+    return false;
+  }
 }
 
 export async function createCustomWord(
@@ -100,6 +149,9 @@ export async function deleteUserWord(
 async function getWordlistsInternal(userId: string) {
   return await prisma.userWordList.findMany({
     where: { userId },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       _count: {
         select: { words: true },

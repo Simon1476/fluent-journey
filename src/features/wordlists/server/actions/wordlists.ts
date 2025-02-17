@@ -1,7 +1,6 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
 import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
 import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
@@ -11,6 +10,8 @@ import {
   createCustomWord as createCustomWordDb,
   createUserWord as createUserWordDb,
   deleteUserWord as deleteUserWordDb,
+  deleteWordlist as deleteWordlistDb,
+  createWordlist as createWordlistDb,
 } from "@/features/wordlists/server/db/wordlists";
 
 export async function createWordList(
@@ -22,19 +23,14 @@ export async function createWordList(
 
   const { success, data } = wordListCreateSchema.safeParse(unsafeData);
 
-  if (!success) {
+  if (!success || userId == null) {
     return {
       error: true,
       message: "단어장을 생성하는 동안 오류가 발생했습니다.",
     };
   }
 
-  const { id } = await prisma.userWordList.create({
-    data: {
-      name: data.title,
-      userId,
-    },
-  });
+  const { id } = await createWordlistDb(userId, data);
 
   redirect(`/word/lists/${id}`);
 }
@@ -49,7 +45,7 @@ export async function createWord(
 
   const { success, data } = wordListWordSchema.safeParse(unsafeData);
 
-  if (!success) {
+  if (!success || userId == null) {
     return {
       error: true,
       message: "단어장에 단어를 추가하지 못했습니다.",
@@ -69,12 +65,35 @@ export async function deleteWord(listId: string, wordId: string) {
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);
-
   const errorMessage = "단어를 삭제하지 못했습니다.";
+
+  if (userId == null) {
+    return { error: true, message: errorMessage };
+  }
+
   const isSuccess = await deleteUserWordDb(listId, wordId, userId);
 
   return {
     error: !isSuccess,
     message: isSuccess ? "성공적으로 단어를 삭제 했습니다." : errorMessage,
+  };
+}
+
+export async function deleteWordList(listId: string) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+
+  const errorMessage = "단어장을 삭제하지 못했습니다.";
+
+  if (userId == null) {
+    return { error: true, message: errorMessage };
+  }
+
+  const isSuccess = await deleteWordlistDb(listId, userId);
+
+  return {
+    error: !isSuccess,
+    message: isSuccess ? "성공적으로 단어장을 삭제 했습니다." : errorMessage,
   };
 }

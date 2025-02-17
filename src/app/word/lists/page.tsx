@@ -2,9 +2,11 @@ import { auth } from "@/auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, Book } from "lucide-react";
+import { Plus, Book, Trash2 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getWordLists } from "@/features/wordlists/server/db/wordlists";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DeleteWordListButton } from "@/features/wordlists/components/DeleteWordListButton";
 
 export default async function WordListsPage() {
   const session = await auth();
@@ -27,13 +29,31 @@ export default async function WordListsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {lists.map((list) => (
-          <Link key={list.id} href={`/word/lists/${list.id}`}>
+        {lists?.map((list) => (
+          <div key={list.id}>
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Book className="w-5 h-5" />
-                  {list.name}
+                <CardTitle className="flex items-center gap-2 justify-between">
+                  <Link
+                    className="flex items-center gap-2"
+                    key={list.id}
+                    href={`/word/lists/${list.id}`}
+                  >
+                    <Book className="w-5 h-5" />
+                    {list.name}
+                  </Link>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <DeleteWordListButton
+                      listId={list.id}
+                      listName={list.name}
+                    />
+                  </AlertDialog>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -49,11 +69,11 @@ export default async function WordListsPage() {
                 </div>
               </CardContent>
             </Card>
-          </Link>
+          </div>
         ))}
       </div>
 
-      {lists.length === 0 && (
+      {lists?.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">아직 만든 단어장이 없습니다.</p>
           <Link href="/word/lists/create">

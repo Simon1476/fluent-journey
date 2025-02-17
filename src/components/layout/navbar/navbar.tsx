@@ -61,7 +61,7 @@ const Navbar = () => {
           </nav>
 
           {/* 인증 버튼 / 프로필 */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 z-20">
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -76,25 +76,38 @@ const Navbar = () => {
                         className="object-cover"
                       />
                       <AvatarFallback>
-                        {session.user?.name || "U"}
+                        {session.user.nickname || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <span className="max-w-[100px] truncate">
-                      {session.user?.name || "사용자"}
+                      {session.user?.nickname || "사용자"}
                     </span>
                     <ChevronDown size={16} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-48 bg-white dark:bg-zinc-950 shadow-lg border border-gray-200 dark:border-gray-800"
+                >
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 ">
                     프로필 설정
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                     학습 통계
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Link href="/word/lists/create" className="w-full">
+                      단어장 생성
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Link href="/word/lists" className="w-full">
+                      단어장 목록
+                    </Link>
                   </DropdownMenuItem>
                   <form action={handleKakaoSignout}>
                     <DropdownMenuItem
-                      className="cursor-pointer text-red-600"
+                      className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
                       onClick={handleKakaoSignout}
                     >
                       로그아웃
