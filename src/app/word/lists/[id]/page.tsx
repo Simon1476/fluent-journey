@@ -3,6 +3,17 @@ import { CreateWordModal } from "@/features/wordlists/components/CreateWordModal
 import { getWordListById } from "@/features/wordlists/server/db/wordlists";
 import { redirect } from "next/navigation";
 import { WordlistGrid } from "@/features/wordlists/components/WordlistGrid";
+import { Button } from "@/components/ui/button";
+import { Brain } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import Flashcards from "@/components/Flashcards ";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -23,11 +34,48 @@ export default async function WordListPage({ params }: Props) {
     return <div>단어장을 찾을 수 없습니다.</div>;
   }
 
+  // 단어 데이터 형식 변환
+  const studyWords = wordList.words.map((userWord) => ({
+    id: userWord.id,
+    english: userWord.word?.english || userWord.customWord?.english || "",
+    korean: userWord.word?.korean || userWord.customWord?.korean || "",
+    level: userWord.word?.level || userWord.customWord?.level || "",
+    example: userWord.word?.example || userWord.customWord?.example,
+    pronunciation:
+      userWord.word?.pronunciation || userWord.customWord?.pronunciation,
+  }));
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{wordList.name}</h1>
-        <CreateWordModal listId={id} />
+      <div className="flex justify-between items-center gap-4 mb-8 flex-col sm:flex-row">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center sm:justify-start">
+          {wordList.name}
+        </h1>
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
+          {wordList.words.length > 0 && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="gap-2 h-9 px-3 text-sm font-medium border-gray-200 hover:bg-gray-50"
+                >
+                  <Brain className="w-4 h-4 text-gray-600" />
+                  단어 테스트
+                </Button>
+              </DialogTrigger>
+              <DialogOverlay className="bg-black/50" />
+              <DialogContent className="max-w-2xl bg-white sm:rounded">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-semibold">
+                    단어 학습
+                  </DialogTitle>
+                </DialogHeader>
+                <Flashcards words={studyWords} />
+              </DialogContent>
+            </Dialog>
+          )}
+          <CreateWordModal listId={id} />
+        </div>
       </div>
       <WordlistGrid words={wordList.words} listId={id} />
       {wordList.words.length === 0 && (
