@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
-import Navbar from "@/components/layout/navbar/navbar";
+import Navbar from "@/components/navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",

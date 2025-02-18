@@ -89,10 +89,10 @@ const Navbar = () => {
                   align="end"
                   className="w-48 bg-white dark:bg-zinc-950 shadow-lg border border-gray-200 dark:border-gray-800"
                 >
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 ">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-500 ">
                     프로필 설정
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-500 dark:hover:bg-gray-800">
                     학습 통계
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
