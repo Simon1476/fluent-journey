@@ -31,7 +31,6 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { createWord } from "../server/actions/wordlists";
 
@@ -41,7 +40,6 @@ interface Props {
 
 export function CreateWordModal({ listId }: Props) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof wordListWordSchema>>({
     resolver: zodResolver(wordListWordSchema),
@@ -67,7 +65,6 @@ export function CreateWordModal({ listId }: Props) {
 
     form.reset();
     setOpen(false);
-    router.refresh();
   }
 
   return (
