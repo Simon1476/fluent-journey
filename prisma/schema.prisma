@@ -8,14 +8,17 @@ generator client {
 }
 
 model User {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?        @unique
+  email         String?          @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  sessions      Session[]
   wordLists     UserWordList[]
+  favorites     Favorite[]
+  sharedLists   SharedWordList[]
+  comments      Comment[]
+  likes         Like[]
 
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -57,34 +60,20 @@ model Word {
   UserWord      UserWord[]
 }
 
-model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String   @unique
-  userId       String   @db.ObjectId
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationToken {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
 model UserWordList {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String     @db.ObjectId
-  name      String // 단어장 이름 (예: "TOEIC 단어", "자주 틀리는 단어" 등)
-  words     UserWord[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String           @db.ObjectId
+  name           String
+  description    String? // 단어장 설명 추가
+  isPublic       Boolean          @default(false) // 공유 여부
+  words          UserWord[]
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favorites      Favorite[] // 즐겨찾기 관계 추가
+  tags           String[] // 태그 (예: #TOEIC, #초급, #IT용어 등)
+  viewCount      Int              @default(0) // 조회수
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  SharedWordList SharedWordList[]
 }
 
 model UserCustomWord {
@@ -119,4 +108,69 @@ model UserWord {
 
   @@index([wordId])
   @@index([customWordId])
+}
+
+model Favorite {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  wordListId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordList UserWordList @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordListId]) // 한 사용자가 같은 단어장을 중복 즐겨찾기 못하도록
+  @@index([userId])
+  @@index([wordListId])
+}
+
+model SharedWordList {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  originalId  String   @db.ObjectId // 원본 UserWordList ID
+  userId      String   @db.ObjectId // 공유한 사용자 ID
+  name        String
+  description String?
+  tags        String[]
+  viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
+  // isActive    Boolean  @default(true) // 공유 상태 활성화/비활성화
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  original UserWordList @relation(fields: [originalId], references: [id], onDelete: Cascade)
+  comments Comment[] // 댓글 기능 추가
+  likes    Like[] // 좋아요 기능 추가
+
+  @@index([userId])
+  @@index([originalId])
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  userId    String   @db.ObjectId
+  listId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordList SharedWordList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([listId])
+}
+
+model Like {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  listId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordList SharedWordList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listId])
+  @@index([userId])
+  @@index([listId])
 }

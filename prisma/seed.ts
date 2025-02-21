@@ -30,22 +30,24 @@ async function main() {
 
   await new Promise((resolve) => {
     parser.on("end", async function () {
-      for (const record of records) {
-        await prisma.word.create({
-          data: {
-            english: record.english,
-            korean: record.korean,
-            level: record.level,
-          },
-        });
-      }
-      // await prisma.word.createMany({
-      //   data: records.map(record => ({
-      //     english: record.english,
-      //     korean: record.korean,
-      //     level: record.level,
-      //   })),
-      // });
+      // for (const record of records) {
+      //   await prisma.word.create({
+      //     data: {
+      //       english: record.english,
+      //       korean: record.korean,
+      //       level: record.level,
+      //     },
+      //   });
+      // }
+      await prisma.word.createMany({
+        data: records.map((record) => ({
+          english: record.english,
+          korean: record.korean,
+          level: record.level,
+        })),
+      });
+
+      // await prisma.word.deleteMany({});
       resolve(true);
     });
   });
