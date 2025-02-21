@@ -14,27 +14,35 @@ import { useTransition } from "react";
 import { deleteWord } from "../server/actions/wordlists";
 
 interface Props {
-  wordId: string;
+  title?: string;
+  description?: string;
   listId: string;
+  wordId: string;
 }
-export function DeleteWordAlertDialogContent({ wordId, listId }: Props) {
-  const [isDeletePending, startDeleteTransition] = useTransition();
+
+export function DeleteWordAlertDialogContent({
+  title = "삭제하시겠습니까?",
+  description = "이 작업은 되돌릴 수 없으며 영구적으로 삭제됩니다.",
+  listId,
+  wordId,
+}: Props) {
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   return (
-    <AlertDialogContent>
+    <AlertDialogContent className="bg-white border-4 shadow-lg">
       <AlertDialogHeader>
-        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-        <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete this
-          product.
-        </AlertDialogDescription>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{description}</AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogCancel className="bg-gray-100 hover:bg-gray-500 text-red-700 border-0">
+          Cancel
+        </AlertDialogCancel>
         <AlertDialogAction
+          className="bg-red-700"
           onClick={() => {
-            startDeleteTransition(async () => {
+            startTransition(async () => {
               const data = await deleteWord(listId, wordId);
               if (data.message) {
                 toast({
@@ -45,7 +53,7 @@ export function DeleteWordAlertDialogContent({ wordId, listId }: Props) {
               }
             });
           }}
-          disabled={isDeletePending}
+          disabled={isPending}
         >
           Delete
         </AlertDialogAction>
