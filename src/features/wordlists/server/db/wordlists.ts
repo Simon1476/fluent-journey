@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
 import {
+  addToSharedWordListSchema,
   wordListCreateSchema,
   wordListWordSchema,
 } from "@/features/wordlists/schemas/wordlists";
@@ -65,6 +66,95 @@ export async function createWordlist(
   });
 
   return newWordlist;
+}
+
+export async function addToSharedlist(
+  userId: string,
+  listId: string,
+  data: z.infer<typeof addToSharedWordListSchema>
+) {
+  // 트랜잭션으로 처리하여 두 작업이 모두 성공하거나 모두 실패하도록 합니다
+  const [updatedWordList, newSharedWordlist] = await prisma.$transaction([
+    // 원본 단어장을 public으로 업데이트
+    prisma.userWordList.update({
+      where: { id: listId },
+      data: { isPublic: true },
+    }),
+
+    // 공유 단어장 생성
+    prisma.sharedWordList.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        tags: data.tags || [],
+        userId,
+        originalId: listId,
+      },
+    }),
+  ]);
+
+  // 캐시 무효화
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: updatedWordList.id,
+    userId,
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.sharedWordlists,
+    id: newSharedWordlist.id,
+    userId,
+  });
+
+  return {
+    error: false,
+    message: "단어장이 성공적으로 공유되었습니다.",
+  };
+}
+
+export async function deleteSharedWordlist(listId: string, userId: string) {
+  console.log("listId=", listId);
+  console.log("userId=", userId);
+  try {
+    // 트랜잭션으로 처리
+    const [, updatedWordList] = await prisma.$transaction([
+      // 공유 단어장 삭제
+      prisma.sharedWordList.delete({
+        where: {
+          id: listId,
+          userId: userId, // 권한 확인
+        },
+      }),
+
+      // 원본 단어장 isPublic 상태 업데이트
+      prisma.userWordList.update({
+        where: {
+          id: listId,
+          userId: userId,
+        },
+        data: {
+          isPublic: false,
+        },
+      }),
+    ]);
+
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: listId,
+      userId,
+    });
+
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      id: updatedWordList.id,
+      userId,
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Delete shared wordlist error:", error);
+    return false;
+  }
 }
 
 export async function deleteWordlist(listId: string, userId: string) {
