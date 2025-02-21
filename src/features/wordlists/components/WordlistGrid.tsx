@@ -3,8 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { deleteWord } from "../server/actions/wordlists";
-import { DeleteSharedListAlertDialogContent } from "./DeleteSharedListAlertDialogContent";
 import { DeleteWordAlertDialogContent } from "./DeleteWordAlertDialogContent";
 
 interface Word {
