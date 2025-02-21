@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { getWordLists } from "@/features/wordlists/server/db/wordlists";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DeleteWordListButton } from "@/features/wordlists/components/DeleteWordListButton";
+import DeleteSharedListAlertDialogContent from "@/features/wordlists/components/DeleteSharedListAlertDialogContent";
+import AddToSharedWordListForm from "@/features/wordlists/components/AddToSharedWordListDialogContent";
 
 export default async function WordListsPage() {
   const session = await auth();
@@ -42,18 +44,38 @@ export default async function WordListsPage() {
                     <Book className="w-5 h-5" />
                     {list.name}
                   </Link>
-
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <DeleteWordListButton
-                      listId={list.id}
-                      listName={list.name}
-                    />
-                  </AlertDialog>
+                  <>
+                    {list.isPublic ? (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="bg-red-50 hover:bg-red-100 border-red-200"
+                          >
+                            <Book className="w-4 h-4 mr-2 text-red-600" />
+                            단어장 취소하기
+                          </Button>
+                        </AlertDialogTrigger>
+                        <DeleteSharedListAlertDialogContent listId={list.id} />
+                      </AlertDialog>
+                    ) : (
+                      <AddToSharedWordListForm
+                        listTitle={list.name}
+                        listId={list.id}
+                      />
+                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <DeleteWordListButton
+                        listId={list.id}
+                        listName={list.name}
+                      />
+                    </AlertDialog>
+                  </>
                 </CardTitle>
               </CardHeader>
               <CardContent>
