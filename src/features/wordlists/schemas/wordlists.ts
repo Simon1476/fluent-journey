@@ -12,3 +12,9 @@ export const wordListWordSchema = z.object({
   level: z.string(),
   example: z.string().optional(),
 });
+
+export const addToSharedWordListSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  tags: z.array(z.string()),
+});
