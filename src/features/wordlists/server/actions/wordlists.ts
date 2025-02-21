@@ -2,7 +2,10 @@
 
 import { auth } from "@/auth";
 import { getUserId } from "@/lib/utils";
-import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
+import {
+  addToSharedWordListSchema,
+  wordListCreateSchema,
+} from "@/features/wordlists/schemas/wordlists";
 import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 import { redirect } from "next/navigation";
@@ -12,6 +15,8 @@ import {
   deleteUserWord as deleteUserWordDb,
   deleteWordlist as deleteWordlistDb,
   createWordlist as createWordlistDb,
+  addToSharedlist as addToSharedlistDb,
+  deleteSharedWordlist as deleteSharedWordlistDb,
 } from "@/features/wordlists/server/db/wordlists";
 
 export async function createWordList(
@@ -58,6 +63,50 @@ export async function createWord(
   return {
     error: false,
     message: "단어장에 단어를 추가했습니다.",
+  };
+}
+
+export async function addToSharedlist(
+  listId: string,
+  unsafeData: z.infer<typeof addToSharedWordListSchema>
+) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+
+  const { success, data } = addToSharedWordListSchema.safeParse(unsafeData);
+
+  if (!success || userId == null) {
+    return {
+      error: true,
+      message: "공유 단어장에 단어장을 공유하지 못했습니다.",
+    };
+  }
+
+  await addToSharedlistDb(userId, listId, data);
+
+  return {
+    error: false,
+    message: "단어장에 단어를 추가했습니다.",
+  };
+}
+
+export async function deleteSharedWordlist(listId: string) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+
+  const errorMessage = "단어장 공유를 취소하지 못했습니다.";
+
+  if (userId == null) {
+    return { error: true, message: errorMessage };
+  }
+
+  const isSuccess = await deleteSharedWordlistDb(listId, userId);
+
+  return {
+    error: !isSuccess,
+    message: isSuccess ? "단어장 공유를 취소 했습니다." : errorMessage,
   };
 }
 
