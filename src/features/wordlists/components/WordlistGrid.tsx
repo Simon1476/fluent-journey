@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteWordAlertDialogContent } from "@/features/wordlists/components/DeleteWordAlertDialogContent";
+
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { deleteWord } from "../server/actions/wordlists";
+import { DeleteSharedListAlertDialogContent } from "./DeleteSharedListAlertDialogContent";
+import { DeleteWordAlertDialogContent } from "./DeleteWordAlertDialogContent";
 
 interface Word {
   id: string;
@@ -58,13 +61,17 @@ export function WordlistCard({
             </span>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50"
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
               <DeleteWordAlertDialogContent
-                wordId={userWord.id}
                 listId={listId}
+                wordId={userWord.id}
               />
             </AlertDialog>
           </div>
