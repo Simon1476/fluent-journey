@@ -91,7 +91,10 @@ export async function addToSharedlist(
   };
 }
 
-export async function deleteSharedWordlist(listId: string) {
+export async function deleteSharedWordlist(
+  listId: string,
+  sharedListId: string
+) {
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);
@@ -102,7 +105,7 @@ export async function deleteSharedWordlist(listId: string) {
     return { error: true, message: errorMessage };
   }
 
-  const isSuccess = await deleteSharedWordlistDb(listId, userId);
+  const isSuccess = await deleteSharedWordlistDb(listId, sharedListId, userId);
 
   return {
     error: !isSuccess,

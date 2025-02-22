@@ -44,7 +44,7 @@ export default async function WordListsPage() {
                     <Book className="w-5 h-5" />
                     {list.name}
                   </Link>
-                  <>
+                  <div className="flex gap-1 items-center">
                     {list.isPublic ? (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -53,10 +53,17 @@ export default async function WordListsPage() {
                             className="bg-red-50 hover:bg-red-100 border-red-200"
                           >
                             <Book className="w-4 h-4 mr-2 text-red-600" />
-                            단어장 취소하기
+                            공유 취소하기
                           </Button>
                         </AlertDialogTrigger>
-                        <DeleteSharedListAlertDialogContent listId={list.id} />
+                        {list.sharedWordList && (
+                          <DeleteSharedListAlertDialogContent
+                            title="공유를 취소하시겠습니까?"
+                            description="이 작업은 공유한 작업장을 삭제 합니다"
+                            listId={list.id}
+                            sharedListId={list.sharedWordList.id}
+                          />
+                        )}
                       </AlertDialog>
                     ) : (
                       <AddToSharedWordListForm
@@ -75,7 +82,7 @@ export default async function WordListsPage() {
                         listName={list.name}
                       />
                     </AlertDialog>
-                  </>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>

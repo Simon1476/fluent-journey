@@ -112,41 +112,39 @@ export async function addToSharedlist(
   };
 }
 
-export async function deleteSharedWordlist(listId: string, userId: string) {
-  console.log("listId=", listId);
-  console.log("userId=", userId);
+export async function deleteSharedWordlist(
+  listId: string,
+  sharedListId: string,
+  userId: string
+) {
   try {
-    // 트랜잭션으로 처리
-    const [, updatedWordList] = await prisma.$transaction([
-      // 공유 단어장 삭제
-      prisma.sharedWordList.delete({
-        where: {
-          id: listId,
-          userId: userId, // 권한 확인
-        },
-      }),
+    await prisma.sharedWordList.delete({
+      where: {
+        id: sharedListId,
+        userId: userId,
+      },
+    });
 
-      // 원본 단어장 isPublic 상태 업데이트
-      prisma.userWordList.update({
-        where: {
-          id: listId,
-          userId: userId,
-        },
-        data: {
-          isPublic: false,
-        },
-      }),
-    ]);
+    // 원본 단어장 isPublic 상태 업데이트
+    await prisma.userWordList.update({
+      where: {
+        id: listId,
+        userId: userId,
+      },
+      data: {
+        isPublic: false,
+      },
+    });
 
     revalidateDbCache({
       tag: CACHE_TAGS.sharedWordlists,
-      id: listId,
+      id: sharedListId,
       userId,
     });
 
     revalidateDbCache({
       tag: CACHE_TAGS.wordlists,
-      id: updatedWordList.id,
+      id: listId,
       userId,
     });
 
@@ -245,6 +243,11 @@ async function getWordlistsInternal(userId: string) {
     include: {
       _count: {
         select: { words: true },
+      },
+      sharedWordList: {
+        select: {
+          id: true,
+        },
       },
     },
   });

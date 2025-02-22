@@ -17,12 +17,14 @@ interface DeleteAlertProps {
   title?: string;
   description?: string;
   listId: string;
+  sharedListId: string;
 }
 
 export default function DeleteSharedListAlertDialogContent({
   title = "삭제하시겠습니까?",
   description = "이 작업은 되돌릴 수 없으며 영구적으로 삭제됩니다.",
   listId,
+  sharedListId,
 }: DeleteAlertProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -41,7 +43,7 @@ export default function DeleteSharedListAlertDialogContent({
           className="bg-red-700"
           onClick={() => {
             startTransition(async () => {
-              const data = await deleteSharedWordlist(listId);
+              const data = await deleteSharedWordlist(listId, sharedListId);
               if (data.message) {
                 toast({
                   title: data.error ? "Error" : "Success",
