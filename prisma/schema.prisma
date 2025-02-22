@@ -61,19 +61,19 @@ model Word {
 }
 
 model UserWordList {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String           @db.ObjectId
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String          @db.ObjectId
   name           String
   description    String? // 단어장 설명 추가
-  isPublic       Boolean          @default(false) // 공유 여부
+  isPublic       Boolean         @default(false) // 공유 여부
   words          UserWord[]
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   favorites      Favorite[] // 즐겨찾기 관계 추가
   tags           String[] // 태그 (예: #TOEIC, #초급, #IT용어 등)
-  viewCount      Int              @default(0) // 조회수
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  SharedWordList SharedWordList[]
+  viewCount      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  sharedWordList SharedWordList?
 }
 
 model UserCustomWord {
@@ -126,7 +126,7 @@ model Favorite {
 
 model SharedWordList {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  originalId  String   @db.ObjectId // 원본 UserWordList ID
+  originalId  String   @unique @db.ObjectId // unique 제약 추가 UserWordList ID
   userId      String   @db.ObjectId // 공유한 사용자 ID
   name        String
   description String?
@@ -139,11 +139,10 @@ model SharedWordList {
 
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   original UserWordList @relation(fields: [originalId], references: [id], onDelete: Cascade)
-  comments Comment[] // 댓글 기능 추가
-  likes    Like[] // 좋아요 기능 추가
+  comments Comment[]
+  likes    Like[]
 
   @@index([userId])
-  @@index([originalId])
 }
 
 model Comment {
