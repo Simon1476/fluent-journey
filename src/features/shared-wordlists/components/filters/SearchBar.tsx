@@ -9,7 +9,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 export function SearchBar({ placeholder }: { placeholder?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [_, startTransition] = useTransition();
 
   const handleSearch = useDebounce((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -26,11 +26,11 @@ export function SearchBar({ placeholder }: { placeholder?: string }) {
   }, 300);
 
   return (
-    <div className="relative flex-1">
+    <div className="relative w-full max-w-2xl">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
       <Input
         placeholder={placeholder}
-        className="pl-10"
+        className="pl-10 w-full bg-white"
         defaultValue={searchParams.get("q")?.toString()}
         onChange={(e) => handleSearch(e.target.value)}
       />

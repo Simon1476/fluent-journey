@@ -31,7 +31,7 @@ export function TagFilter() {
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const updateUrlParams = (newTags: string[]) => {
     const params = new URLSearchParams(searchParams?.toString() || "");
@@ -69,7 +69,7 @@ export function TagFilter() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -84,28 +84,26 @@ export function TagFilter() {
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-4" align="start">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium text-lg mb-3">학습 태그 선택</h4>
-                <div className="flex flex-wrap gap-2">
-                  {TAGS.map((tag) => (
-                    <Button
-                      key={tag.id}
-                      onClick={() => handleTagSelect(tag.id)}
-                      className={cn(
-                        "rounded-full px-4 py-1 font-medium transition-colors",
-                        tag.color,
-                        selectedTags.includes(tag.id) && "ring-2 ring-offset-2",
-                        !selectedTags.includes(tag.id) && "opacity-70"
-                      )}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      {tag.id}
-                    </Button>
-                  ))}
-                </div>
+          <PopoverContent className="w-[280px] p-3 bg-white" align="start">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none mb-3">학습 태그 선택</h4>
+              <div className="flex flex-wrap gap-2">
+                {TAGS.map((tag) => (
+                  <Button
+                    key={tag.id}
+                    onClick={() => handleTagSelect(tag.id)}
+                    className={cn(
+                      "px-2.5 py-0.5 h-7 text-sm font-medium transition-colors rounded-full",
+                      tag.color,
+                      selectedTags.includes(tag.id) && "ring-2 ring-offset-1",
+                      !selectedTags.includes(tag.id) && "opacity-70"
+                    )}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    {tag.id}
+                  </Button>
+                ))}
               </div>
             </div>
           </PopoverContent>
@@ -116,29 +114,31 @@ export function TagFilter() {
             variant="ghost"
             size="sm"
             onClick={clearAllTags}
-            className="h-10 text-gray-500 hover:text-gray-700"
+            className="h-7 px-2 text-gray-500 hover:text-gray-700"
           >
             초기화
           </Button>
         )}
+        {selectedTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {selectedTags.map((tagId) => {
+              const tag = TAGS.find((t) => t.id === tagId);
+              return (
+                <Badge
+                  key={tagId}
+                  className={cn(
+                    "px-2 py-0.5 text-sm cursor-pointer",
+                    tag?.color
+                  )}
+                  onClick={() => handleTagSelect(tagId)}
+                >
+                  {tagId} ✕
+                </Badge>
+              );
+            })}
+          </div>
+        )}
       </div>
-
-      {selectedTags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {selectedTags.map((tagId) => {
-            const tag = TAGS.find((t) => t.id === tagId);
-            return (
-              <Badge
-                key={tagId}
-                className={cn("px-3 py-1 cursor-pointer", tag?.color)}
-                onClick={() => handleTagSelect(tagId)}
-              >
-                {tagId} ✕
-              </Badge>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
