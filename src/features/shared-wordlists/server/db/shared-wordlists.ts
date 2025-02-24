@@ -8,6 +8,7 @@ import {
   // revalidateDbCache,
   dbCache,
   getGlobalTag,
+  getIdTag,
   getUserTag,
   // getIdTag,
 } from "@/lib/cache";
@@ -29,6 +30,14 @@ export async function getSharedWordLists(
   });
 
   return cacheFn(q, tags);
+}
+
+export async function getSharedWordListById(id: string) {
+  const cacheFn = dbCache(getSharedWordListByIdInternal, {
+    tags: [getIdTag(id, CACHE_TAGS.sharedWordlists)],
+  });
+
+  return cacheFn(id);
 }
 
 // export async function getWordListById(accountId: string, id: string) {
@@ -185,6 +194,67 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
       createdAt: "desc",
     },
   });
+}
+
+async function getSharedWordListByIdInternal(id: string) {
+  // 조회수 증가와 데이터 조회를 트랜잭션으로 처리
+  const [_, sharedList] = await prisma.$transaction([
+    // 조회수 증가
+    prisma.sharedWordList.update({
+      where: { id },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    }),
+    // 상세 데이터 조회
+    prisma.sharedWordList.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        original: {
+          include: {
+            words: {
+              include: {
+                word: true,
+                customWord: true,
+              },
+            },
+          },
+        },
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        likes: true,
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return sharedList;
 }
 
 // async function getWordlistsByIdInternal(id: string) {
