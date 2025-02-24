@@ -8,14 +8,14 @@ import { redirect } from "next/navigation";
 export default async function SharedWordListsPage({
   searchParams,
 }: {
-  searchParams: { q?: string; tags?: string };
+  searchParams: Promise<{ q?: string; tags?: string }>;
 }) {
   const session = await auth();
   if (!session) {
     redirect("/signin");
   }
 
-  const { q, tags } = searchParams;
+  const { q, tags } = await searchParams;
 
   const selectedTags = tags ? tags.split(",") : [];
 
