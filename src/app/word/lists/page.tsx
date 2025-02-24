@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DeleteWordListButton } from "@/features/wordlists/components/DeleteWordListButton";
 import DeleteSharedListAlertDialogContent from "@/features/wordlists/components/DeleteSharedListAlertDialogContent";
 import AddToSharedWordListForm from "@/features/wordlists/components/AddToSharedWordListDialogContent";
+import { formatDate } from "@/lib/utils";
 
 export default async function WordListsPage() {
   const session = await auth();
@@ -87,14 +88,8 @@ export default async function WordListsPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between text-sm text-gray-500">
-                  <span>단어 {list._count.words}개</span>
-                  <span>
-                    {new Date(list.createdAt).toLocaleDateString("ko-KR", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
+                  <span>단어 {list.words.length}개</span>
+                  <span>{formatDate(list.createdAt)}</span>
                 </div>
               </CardContent>
             </Card>
