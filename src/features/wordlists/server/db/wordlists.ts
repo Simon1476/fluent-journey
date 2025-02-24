@@ -12,7 +12,7 @@ import {
   CACHE_TAGS,
   revalidateDbCache,
   dbCache,
-  getGlobalTag,
+  // getGlobalTag,
   getUserTag,
   getIdTag,
 } from "@/lib/cache";
@@ -23,29 +23,22 @@ export async function getWordLists(accountId: string) {
   if (userId == null) return null;
 
   const cacheFn = dbCache(getWordlistsInternal, {
-    tags: [
-      getGlobalTag(CACHE_TAGS.wordlists),
-      getUserTag(userId, CACHE_TAGS.wordlists),
-    ],
+    tags: [getUserTag(userId, CACHE_TAGS.wordlists)],
   });
 
   return cacheFn(userId);
 }
 
-export async function getWordListById(accountId: string, id: string) {
+export async function getWordListById(accountId: string, wordListId: string) {
   const userId = await getUserId(accountId);
 
   if (userId == null) return null;
 
   const cacheFn = dbCache(getWordlistsByIdInternal, {
-    tags: [
-      getGlobalTag(CACHE_TAGS.wordlists),
-      getUserTag(userId, CACHE_TAGS.wordlists),
-      getIdTag(id, CACHE_TAGS.wordlists),
-    ],
+    tags: [getIdTag(wordListId, CACHE_TAGS.wordlists)],
   });
 
-  return cacheFn(id);
+  return cacheFn(wordListId);
 }
 
 export async function createWordlist(
@@ -192,10 +185,27 @@ export async function createCustomWord(
     },
   });
 
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists, // 관련된 캐시 태그
+    userId, // 사용자 ID
+  });
+
   return id;
 }
 
-export async function createUserWord(listId: string, customWordId: string) {
+export async function createUserWord(
+  listId: string,
+  customWordId: string,
+  userId: string
+) {
+  // 먼저 해당 단어장의 공유 상태 확인
+  const wordList = await prisma.userWordList.findUnique({
+    where: { id: listId },
+    include: {
+      sharedWordList: true,
+    },
+  });
+
   const result = await prisma.userWord.create({
     data: {
       wordList: { connect: { id: listId } },
@@ -206,10 +216,24 @@ export async function createUserWord(listId: string, customWordId: string) {
     },
   });
 
+  // 원본 단어장 캐시 무효화
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: userId,
+  });
+
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
     id: listId,
   });
+
+  // 공유 단어장이 있다면 해당 캐시도 무효화
+  if (wordList?.sharedWordList) {
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: wordList.sharedWordList.id,
+    });
+  }
 
   return result;
 }
@@ -219,17 +243,78 @@ export async function deleteUserWord(
   wordId: string,
   userId: string
 ) {
+  const isShared = await prisma.userWordList.findUnique({
+    where: {
+      id: listId,
+      userId: userId,
+    },
+    include: {
+      sharedWordList: true,
+    },
+  });
+
   // 권한 확인
   const wordList = await getUserWordListInternal(listId, userId);
+
   if (!wordList) return false;
 
   await deleteUserWordInternal(wordId);
 
+  // 원본 단어장 캐시 무효화
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
     id: listId,
     userId,
   });
+
+  // 공유 단어장이 있다면 해당 캐시도 무효화
+  if (isShared?.sharedWordList) {
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: isShared.sharedWordList.id,
+    });
+  }
+
+  return true;
+}
+
+// 단어장 이름 수정 등의 업데이트를 위한 함수 추가
+export async function updateWordList(
+  listId: string,
+  userId: string,
+  data: { name?: string; description?: string }
+) {
+  const wordList = await prisma.userWordList.findUnique({
+    where: {
+      id: listId,
+      userId,
+    },
+    include: {
+      sharedWordList: true,
+    },
+  });
+
+  if (!wordList) return false;
+
+  await prisma.userWordList.update({
+    where: { id: listId },
+    data,
+  });
+
+  // 원본 단어장 캐시 무효화
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: listId,
+    userId,
+  });
+
+  // 공유 단어장이 있다면 해당 캐시도 무효화
+  if (wordList.sharedWordList) {
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: wordList.sharedWordList.id,
+    });
+  }
 
   return true;
 }
@@ -241,9 +326,7 @@ async function getWordlistsInternal(userId: string) {
       createdAt: "desc",
     },
     include: {
-      _count: {
-        select: { words: true },
-      },
+      words: true,
       sharedWordList: {
         select: {
           id: true,

@@ -58,7 +58,7 @@ export async function createWord(
   }
 
   const customWordId = await createCustomWordDb(data, userId);
-  await createUserWordDb(listId, customWordId);
+  await createUserWordDb(listId, customWordId, userId);
 
   return {
     error: false,
