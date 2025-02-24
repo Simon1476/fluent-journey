@@ -47,7 +47,7 @@ export function SharedWordlistCard({ list, userId }: Props) {
           {/* <WordlistTags tags={list.tags} /> */}
           <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
             <div className="flex items-center gap-4">
-              <span>{list._count.comments} words</span>
+              <span>{list._count.comments} comments</span>
               <span className="flex items-center gap-1">
                 <Eye className="w-4 h-4" />
                 {list.viewCount}
