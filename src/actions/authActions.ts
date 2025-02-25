@@ -9,3 +9,11 @@ export async function handleKakaoSignin() {
 export async function handleKakaoSignout() {
   await signOut({ redirectTo: "/signin" });
 }
+
+export async function handleGoogleSignin() {
+  await signIn("google", { redirectTo: "/" });
+}
+
+export async function handleGoogleSignout() {
+  await signOut({ redirectTo: "/signin" });
+}
