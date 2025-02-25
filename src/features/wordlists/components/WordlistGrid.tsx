@@ -7,23 +7,11 @@ import { DeleteWordAlertDialogContent } from "./DeleteWordAlertDialogContent";
 
 interface Word {
   id: string;
-  word: {
-    id: string;
-    english: string;
-    korean: string;
-    level: string;
-    isOfficial: boolean;
-    pronunciation: string | null;
-    example: string | null;
-  } | null;
-  customWord: {
-    id: string;
-    english: string;
-    korean: string;
-    level: string;
-    pronunciation: string | null;
-    example: string | null;
-  } | null;
+  english: string;
+  korean: string;
+  level: string | null;
+  example: string | null;
+  pronunciation: string | null;
 }
 
 interface WordlistGridProps {
@@ -52,11 +40,9 @@ export function WordlistCard({
     <Card key={userWord.id}>
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
-          <span>{userWord.word?.english || userWord.customWord?.english}</span>
+          <span>{userWord.english}</span>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">
-              {userWord.word?.level || userWord.customWord?.level}
-            </span>
+            <span className="text-sm text-gray-500">{userWord.level}</span>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -76,21 +62,14 @@ export function WordlistCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-lg mb-2">
-          {userWord.word?.korean || userWord.customWord?.korean}
-        </p>
-        {(userWord.word?.pronunciation ||
-          userWord.customWord?.pronunciation) && (
+        <p className="text-lg mb-2">{userWord.korean}</p>
+        {userWord.pronunciation && (
           <p className="text-sm text-gray-500 mb-2">
-            [
-            {userWord.word?.pronunciation || userWord.customWord?.pronunciation}
-            ]
+            [{userWord.pronunciation}]
           </p>
         )}
-        {(userWord.word?.example || userWord.customWord?.example) && (
-          <p className="text-sm text-gray-600 italic">
-            {userWord.word?.example || userWord.customWord?.example}
-          </p>
+        {userWord.example && (
+          <p className="text-sm text-gray-600 italic">{userWord.example}</p>
         )}
       </CardContent>
     </Card>

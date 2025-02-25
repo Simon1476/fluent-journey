@@ -9,9 +9,9 @@ interface WordCard {
   id: string;
   english: string;
   korean: string;
-  level: string;
-  example?: string | null;
-  pronunciation?: string | null;
+  level: string | null;
+  example: string | null;
+  pronunciation: string | null;
 }
 
 interface FlashcardsProps {
@@ -95,7 +95,7 @@ export default function Flashcards({ words }: FlashcardsProps) {
               : "bg-red-100 text-red-700"
           }`}
         >
-          {currentWord.level.toLowerCase()}
+          {currentWord.level ? currentWord.level.toLowerCase() : "N/A"}
         </div>
       </div>
     </div>

@@ -170,32 +170,9 @@ export async function deleteWordlist(listId: string, userId: string) {
   }
 }
 
-export async function createCustomWord(
-  data: z.infer<typeof wordListWordSchema>,
-  userId: string
-) {
-  const { id } = await prisma.userCustomWord.create({
-    data: {
-      english: data.english,
-      korean: data.korean,
-      pronunciation: data.pronunciation,
-      level: data.level,
-      example: data.example,
-      userId: userId,
-    },
-  });
-
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists, // 관련된 캐시 태그
-    userId, // 사용자 ID
-  });
-
-  return id;
-}
-
 export async function createUserWord(
   listId: string,
-  customWordId: string,
+  data: z.infer<typeof wordListWordSchema>,
   userId: string
 ) {
   // 먼저 해당 단어장의 공유 상태 확인
@@ -208,12 +185,16 @@ export async function createUserWord(
 
   const result = await prisma.userWord.create({
     data: {
+      english: data.english,
+      korean: data.korean,
       wordList: { connect: { id: listId } },
-      customWord: { connect: { id: customWordId } },
+      user: { connect: { id: userId } },
     },
-    include: {
-      customWord: true,
-    },
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.userWords,
+    id: userId,
   });
 
   // 원본 단어장 캐시 무효화
@@ -340,12 +321,7 @@ async function getWordlistsByIdInternal(id: string) {
   return await prisma.userWordList.findUnique({
     where: { id },
     include: {
-      words: {
-        include: {
-          word: true,
-          customWord: true,
-        },
-      },
+      words: true,
     },
   });
 }

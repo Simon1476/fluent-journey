@@ -20,9 +20,9 @@ model User {
   comments      Comment[]
   likes         Like[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  UserCustomWord UserCustomWord[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userWord  UserWord[]
 }
 
 model Account {
@@ -48,16 +48,15 @@ model Account {
 }
 
 model Word {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   english       String
   korean        String
   level         String
   category      String?
   example       String?
   pronunciation String?
-  createdAt     DateTime   @default(now())
-  isOfficial    Boolean    @default(true) // 공식 단어장 여부
-  UserWord      UserWord[]
+  createdAt     DateTime @default(now())
+  isOfficial    Boolean  @default(true) // 공식 단어장 여부
 }
 
 model UserWordList {
@@ -76,38 +75,28 @@ model UserWordList {
   sharedWordList SharedWordList?
 }
 
-model UserCustomWord {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  english       String
+model UserWord {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  wordListId    String    @db.ObjectId
+  userId        String    @db.ObjectId // 단어를 추가한 사용자
+  wordId        String?   @db.ObjectId // 공식 단어 ID (공식 단어일 경우)
+  english       String // 커스텀 단어 지원을 위해 직접 저장
   korean        String
-  level         String
+  level         String?
   example       String?
   pronunciation String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  userId        String     @db.ObjectId // 단어를 추가한 사용자
-  UserWord      UserWord[]
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+  isCustom      Boolean   @default(false) // 사용자가 추가한 단어인지 여부
+  status        String? // 'known', 'learning', 'difficult' 등
+  lastReviewed  DateTime?
+  reviewCount   Int       @default(0)
+  note          String? // 사용자가 추가하는 개인 노트
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-model UserWord {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  wordListId   String    @db.ObjectId
-  wordId       String?   @db.ObjectId // 공식 단어 ID
-  customWordId String?   @db.ObjectId // 사용자 추가 단어 ID
-  status       String? // 'known', 'learning', 'difficult' 등
-  lastReviewed DateTime?
-  reviewCount  Int       @default(0)
-  note         String? // 사용자가 추가하는 개인 노트
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  wordList   UserWordList    @relation(fields: [wordListId], references: [id], onDelete: Cascade)
-  word       Word?           @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  customWord UserCustomWord? @relation(fields: [customWordId], references: [id], onDelete: Cascade)
+  wordList UserWordList @relation(fields: [wordListId], references: [id], onDelete: Cascade)
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([wordId])
-  @@index([customWordId])
 }
 
 model Favorite {

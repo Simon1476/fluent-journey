@@ -29,7 +29,6 @@ export default async function WordListPage({ params }: Props) {
 
   const accountId = session.user.id;
   const wordList = await getWordListById(accountId, id);
-
   if (!wordList) {
     return <div>단어장을 찾을 수 없습니다.</div>;
   }
@@ -37,12 +36,11 @@ export default async function WordListPage({ params }: Props) {
   // 단어 데이터 형식 변환
   const studyWords = wordList.words.map((userWord) => ({
     id: userWord.id,
-    english: userWord.word?.english || userWord.customWord?.english || "",
-    korean: userWord.word?.korean || userWord.customWord?.korean || "",
-    level: userWord.word?.level || userWord.customWord?.level || "",
-    example: userWord.word?.example || userWord.customWord?.example,
-    pronunciation:
-      userWord.word?.pronunciation || userWord.customWord?.pronunciation,
+    english: userWord.english,
+    korean: userWord.korean,
+    level: userWord.level,
+    example: userWord.example,
+    pronunciation: userWord.pronunciation,
   }));
 
   return (
@@ -77,6 +75,7 @@ export default async function WordListPage({ params }: Props) {
           <CreateWordModal listId={id} />
         </div>
       </div>
+      {/* 단어장 목록 */}
       <WordlistGrid words={wordList.words} listId={id} />
       {wordList.words.length === 0 && (
         <div className="text-center py-12">

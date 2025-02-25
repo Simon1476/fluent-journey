@@ -10,7 +10,6 @@ import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import {
-  createCustomWord as createCustomWordDb,
   createUserWord as createUserWordDb,
   deleteUserWord as deleteUserWordDb,
   deleteWordlist as deleteWordlistDb,
@@ -57,8 +56,7 @@ export async function createWord(
     };
   }
 
-  const customWordId = await createCustomWordDb(data, userId);
-  await createUserWordDb(listId, customWordId, userId);
+  await createUserWordDb(listId, data, userId);
 
   return {
     error: false,
