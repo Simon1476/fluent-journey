@@ -8,9 +8,9 @@ export const wordListCreateSchema = z.object({
 export const wordListWordSchema = z.object({
   english: z.string(),
   korean: z.string(),
-  pronunciation: z.string().optional(),
-  level: z.string(),
-  example: z.string().optional(),
+  pronunciation: z.string().nullable(),
+  level: z.string().nullable(),
+  example: z.string().nullable(),
 });
 
 export const addToSharedWordListSchema = z.object({
