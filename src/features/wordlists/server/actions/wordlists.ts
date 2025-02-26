@@ -11,6 +11,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import {
   createUserWord as createUserWordDb,
+  updateUserWord as updateUserWordDb,
   deleteUserWord as deleteUserWordDb,
   deleteWordlist as deleteWordlistDb,
   createWordlist as createWordlistDb,
@@ -64,6 +65,51 @@ export async function createWord(
   };
 }
 
+export async function updateWord(
+  listId: string,
+  wordId: string,
+  unsafeData: z.infer<typeof wordListWordSchema>
+) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+  const errorMessage = "단어를 수정하지 못했습니다.";
+
+  const { success, data } = wordListWordSchema.safeParse(unsafeData);
+
+  if (!success || userId == null) {
+    return {
+      error: true,
+      message: errorMessage,
+    };
+  }
+
+  const isSuccess = await updateUserWordDb(listId, wordId, userId, data);
+
+  return {
+    error: !isSuccess,
+    message: isSuccess ? "단어를 수정 했습니다." : errorMessage,
+  };
+}
+
+export async function deleteWord(listId: string, wordId: string) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+  const errorMessage = "단어를 삭제하지 못했습니다.";
+
+  if (userId == null) {
+    return { error: true, message: errorMessage };
+  }
+
+  const isSuccess = await deleteUserWordDb(listId, wordId, userId);
+
+  return {
+    error: !isSuccess,
+    message: isSuccess ? "성공적으로 단어를 삭제 했습니다." : errorMessage,
+  };
+}
+
 export async function addToSharedlist(
   listId: string,
   unsafeData: z.infer<typeof addToSharedWordListSchema>
@@ -108,24 +154,6 @@ export async function deleteSharedWordlist(
   return {
     error: !isSuccess,
     message: isSuccess ? "단어장 공유를 취소 했습니다." : errorMessage,
-  };
-}
-
-export async function deleteWord(listId: string, wordId: string) {
-  const session = await auth();
-  const accountId = session?.user.id;
-  const userId = await getUserId(accountId);
-  const errorMessage = "단어를 삭제하지 못했습니다.";
-
-  if (userId == null) {
-    return { error: true, message: errorMessage };
-  }
-
-  const isSuccess = await deleteUserWordDb(listId, wordId, userId);
-
-  return {
-    error: !isSuccess,
-    message: isSuccess ? "성공적으로 단어를 삭제 했습니다." : errorMessage,
   };
 }
 

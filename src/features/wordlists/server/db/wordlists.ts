@@ -163,6 +163,10 @@ export async function deleteWordlist(listId: string, userId: string) {
       userId,
     });
 
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+    });
+
     return true;
   } catch (error) {
     console.error("Delete wordlist error:", error);
@@ -187,6 +191,9 @@ export async function createUserWord(
     data: {
       english: data.english,
       korean: data.korean,
+      level: data.level,
+      pronunciation: data.pronunciation,
+      example: data.example,
       wordList: { connect: { id: listId } },
       user: { connect: { id: userId } },
     },
@@ -200,11 +207,7 @@ export async function createUserWord(
   // 원본 단어장 캐시 무효화
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
-    id: userId,
-  });
-
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
+    userId: userId,
     id: listId,
   });
 
@@ -217,6 +220,48 @@ export async function createUserWord(
   }
 
   return result;
+}
+
+export async function updateUserWord(
+  listId: string,
+  wordId: string,
+  userId: string,
+  data: z.infer<typeof wordListWordSchema>
+) {
+  const isShared = await prisma.userWordList.findUnique({
+    where: {
+      id: listId,
+      userId: userId,
+    },
+    include: {
+      sharedWordList: true,
+    },
+  });
+
+  // 권한 확인
+  const wordList = await getUserWordListInternal(listId, userId);
+
+  if (!wordList) return false;
+
+  await prisma.userWord.update({
+    where: { id: wordId },
+    data,
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: listId,
+    userId,
+  });
+
+  if (isShared?.sharedWordList) {
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: isShared.sharedWordList.id,
+    });
+  }
+
+  return true;
 }
 
 export async function deleteUserWord(
@@ -234,21 +279,18 @@ export async function deleteUserWord(
     },
   });
 
-  // 권한 확인
   const wordList = await getUserWordListInternal(listId, userId);
 
   if (!wordList) return false;
 
   await deleteUserWordInternal(wordId);
 
-  // 원본 단어장 캐시 무효화
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
     id: listId,
     userId,
   });
 
-  // 공유 단어장이 있다면 해당 캐시도 무효화
   if (isShared?.sharedWordList) {
     revalidateDbCache({
       tag: CACHE_TAGS.sharedWordlists,
