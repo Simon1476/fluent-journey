@@ -221,12 +221,7 @@ async function getSharedWordListByIdInternal(id: string) {
         },
         original: {
           include: {
-            words: {
-              include: {
-                word: true,
-                customWord: true,
-              },
-            },
+            words: true,
           },
         },
         comments: {

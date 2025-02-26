@@ -142,7 +142,6 @@ export default async function SharedListDetailPage({
         <TabsContent value="words" className="p-6">
           <div className="grid gap-4">
             {sharedList.original.words.map((word, index) => {
-              const wordData = word.word || word.customWord;
               return (
                 <Card
                   key={word.id}
@@ -164,11 +163,9 @@ export default async function SharedListDetailPage({
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-xl font-bold text-gray-800">
-                            {wordData?.english}
+                            {word.english}
                           </h3>
-                          <p className="text-gray-500 text-sm">
-                            {wordData?.korean}
-                          </p>
+                          <p className="text-gray-500 text-sm">{word.korean}</p>
                         </div>
                         <Button
                           variant="ghost"
@@ -180,9 +177,9 @@ export default async function SharedListDetailPage({
                       </div>
                     </CardHeader>
                   </div>
-                  {wordData?.example && (
+                  {word?.example && (
                     <CardContent className="py-3 px-6 bg-white border-t text-sm italic text-gray-600">
-                      &quot;{wordData.example}&quot;
+                      &quot;{word.example}&quot;
                     </CardContent>
                   )}
                 </Card>
