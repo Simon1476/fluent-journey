@@ -1,8 +1,16 @@
 import { auth } from "@/auth";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, Book, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Book,
+  Trash2,
+  Share2,
+  GraduationCap,
+  Clock,
+  Award,
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { getWordLists } from "@/features/wordlists/server/db/wordlists";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -21,92 +29,187 @@ export default async function WordListsPage() {
   const lists = await getWordLists(accountId);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">내 단어장</h1>
-        <Link href="/word/lists/create">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />새 단어장 만들기
-          </Button>
-        </Link>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="container mx-auto px-4 py-12">
+        {/* Header Section with Statistics */}
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+            My Vocabulary Collections
+          </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {lists?.map((list) => (
-          <div key={list.id}>
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 justify-between">
-                  <Link
-                    className="flex items-center gap-2"
-                    key={list.id}
-                    href={`/word/lists/${list.id}`}
-                  >
-                    <Book className="w-5 h-5" />
-                    {list.name}
-                  </Link>
-                  <div className="flex gap-1 items-center">
-                    {list.isPublic ? (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="bg-red-50 hover:bg-red-100 border-red-200"
-                          >
-                            <Book className="w-4 h-4 mr-2 text-red-600" />
-                            공유 취소하기
-                          </Button>
-                        </AlertDialogTrigger>
-                        {list.sharedWordList && (
-                          <DeleteSharedListAlertDialogContent
-                            title="공유를 취소하시겠습니까?"
-                            description="이 작업은 공유한 작업장을 삭제 합니다"
-                            listId={list.id}
-                            sharedListId={list.sharedWordList.id}
-                          />
-                        )}
-                      </AlertDialog>
-                    ) : (
-                      <AddToSharedWordListForm
-                        listTitle={list.name}
-                        listId={list.id}
-                      />
-                    )}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <DeleteWordListButton
-                        listId={list.id}
-                        listName={list.name}
-                      />
-                    </AlertDialog>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span>단어 {list.words.length}개</span>
-                  <span>{formatDate(list.createdAt)}</span>
+          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+              <div className="flex justify-center mb-2">
+                <div className="bg-blue-100 rounded-full p-2">
+                  <Book className="w-6 h-6 text-blue-600" />
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-      </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">
+                {lists?.length || 0}
+              </p>
+              <p className="text-sm text-gray-500">Total Lists</p>
+            </div>
 
-      {lists?.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">아직 만든 단어장이 없습니다.</p>
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+              <div className="flex justify-center mb-2">
+                <div className="bg-indigo-100 rounded-full p-2">
+                  <GraduationCap className="w-6 h-6 text-indigo-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">
+                {lists?.reduce((sum, list) => sum + list.words.length, 0) || 0}
+              </p>
+              <p className="text-sm text-gray-500">Total Words</p>
+            </div>
+
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+              <div className="flex justify-center mb-2">
+                <div className="bg-purple-100 rounded-full p-2">
+                  <Award className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">
+                {lists?.filter((list) => list.isPublic).length || 0}
+              </p>
+              <p className="text-sm text-gray-500">Shared Lists</p>
+            </div>
+          </div>
+
           <Link href="/word/lists/create">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />첫 단어장 만들기
+            <Button className="bg-blue-600 hover:bg-blue-700 shadow-md py-6 px-8 rounded-full">
+              <Plus className="w-5 h-5 mr-2" />
+              Create New Vocabulary List
             </Button>
           </Link>
         </div>
-      )}
+
+        {/* Word Lists Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {lists?.map((list) => (
+            <div key={list.id} className="group">
+              <Card className="h-full border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden bg-white group-hover:translate-y-[-4px]">
+                <div
+                  className={`h-2 w-full ${
+                    list.isPublic ? "bg-green-500" : "bg-blue-500"
+                  }`}
+                ></div>
+                <CardHeader className="pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className={`p-2 rounded-lg ${
+                        list.isPublic ? "bg-green-100" : "bg-blue-100"
+                      }`}
+                    >
+                      <Book
+                        className={`w-5 h-5 ${
+                          list.isPublic ? "text-green-600" : "text-blue-600"
+                        }`}
+                      />
+                    </div>
+                    <Link className="flex-1" href={`/word/lists/${list.id}`}>
+                      <h3 className="text-xl font-bold text-gray-800 hover:text-blue-600 truncate">
+                        {list.name}
+                      </h3>
+                    </Link>
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-1">
+                      <GraduationCap className="w-4 h-4" />
+                      <span>
+                        {list.words.length}{" "}
+                        {list.words.length === 1 ? "word" : "words"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{formatDate(list.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-4 pt-4 border-t">
+                    <Link href={`/word/lists/${list.id}`} className="flex-1">
+                      <Button
+                        variant="outline"
+                        className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+                      >
+                        Study
+                      </Button>
+                    </Link>
+
+                    <div className="flex">
+                      {list.isPublic ? (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="border-red-200 text-red-600 hover:bg-red-50"
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          {list.sharedWordList && (
+                            <DeleteSharedListAlertDialogContent
+                              title="단어장 공유를 그만하시겠습니까?t?"
+                              description="이 작업은 공유 단어장에서 선택한 단어장을 제거합니다."
+                              listId={list.id}
+                              sharedListId={list.sharedWordList.id}
+                            />
+                          )}
+                        </AlertDialog>
+                      ) : (
+                        <AddToSharedWordListForm
+                          listTitle={list.name}
+                          listId={list.id}
+                        />
+                      )}
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-gray-400 hover:text-red-600 hover:bg-transparent"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <DeleteWordListButton
+                          listId={list.id}
+                          listName={list.name}
+                        />
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {lists?.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-blue-100 max-w-md mx-auto">
+            <div className="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <Book className="w-8 h-8 text-blue-600" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              No Vocabulary Lists Yet
+            </h3>
+            <p className="text-gray-500 mb-6">
+              Create your first vocabulary list to start learning
+            </p>
+            <Link href="/word/lists/create">
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First List
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
