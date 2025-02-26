@@ -133,6 +133,7 @@ export function CreateWordModal({ listId }: Props) {
                     <Input
                       placeholder="e.g., /ˈæp.əl/"
                       {...field}
+                      value={field.value || ""}
                       className="border-blue-200 focus:ring-blue-300"
                     />
                   </FormControl>
@@ -150,7 +151,7 @@ export function CreateWordModal({ listId }: Props) {
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    defaultValue={field.value || ""}
                   >
                     <FormControl>
                       <SelectTrigger className="border-blue-200 focus:ring-blue-300">
@@ -191,6 +192,7 @@ export function CreateWordModal({ listId }: Props) {
                     <Textarea
                       placeholder="e.g., I enjoy eating fresh apples from the orchard."
                       {...field}
+                      value={field.value || ""}
                       className="border-blue-200 focus:ring-blue-300"
                     />
                   </FormControl>
