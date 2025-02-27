@@ -114,17 +114,18 @@ model Favorite {
 }
 
 model SharedWordList {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  originalId  String   @unique @db.ObjectId // unique 제약 추가 UserWordList ID
-  userId      String   @db.ObjectId // 공유한 사용자 ID
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  originalId  String               @unique @db.ObjectId // unique 제약 추가 UserWordList ID
+  userId      String               @db.ObjectId // 공유한 사용자 ID
   name        String
   description String?
   tags        String[]
-  viewCount   Int      @default(0)
-  likeCount   Int      @default(0)
+  viewCount   Int                  @default(0)
+  likeCount   Int                  @default(0)
   // isActive    Boolean  @default(true) // 공유 상태 활성화/비활성화
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  stats       SharedWordListStats?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   original UserWordList @relation(fields: [originalId], references: [id], onDelete: Cascade)
@@ -132,6 +133,14 @@ model SharedWordList {
   likes    Like[]
 
   @@index([userId])
+}
+
+model SharedWordListStats {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  listId    String         @unique @db.ObjectId
+  viewCount Int            @default(0)
+  updatedAt DateTime       @updatedAt
+  list      SharedWordList @relation(fields: [listId], references: [id])
 }
 
 model Comment {
