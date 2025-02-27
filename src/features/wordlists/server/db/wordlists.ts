@@ -66,25 +66,34 @@ export async function addToSharedlist(
   listId: string,
   data: z.infer<typeof addToSharedWordListSchema>
 ) {
-  // 트랜잭션으로 처리하여 두 작업이 모두 성공하거나 모두 실패하도록 합니다
-  const [updatedWordList, newSharedWordlist] = await prisma.$transaction([
-    // 원본 단어장을 public으로 업데이트
-    prisma.userWordList.update({
-      where: { id: listId },
-      data: { isPublic: true },
-    }),
+  const [updatedWordList, newSharedWordlist, newStats] =
+    await prisma.$transaction([
+      prisma.userWordList.update({
+        where: { id: listId },
+        data: { isPublic: true },
+      }),
 
-    // 공유 단어장 생성
-    prisma.sharedWordList.create({
-      data: {
-        name: data.name,
-        description: data.description,
-        tags: data.tags || [],
-        userId,
-        originalId: listId,
-      },
-    }),
-  ]);
+      // 공유 단어장 생성
+      prisma.sharedWordList.create({
+        data: {
+          name: data.name,
+          description: data.description,
+          tags: data.tags || [],
+          userId,
+          originalId: listId,
+        },
+      }),
+
+      // 조회수 테이블 (SharedWordListStats) 생성
+      prisma.sharedWordListStats.upsert({
+        where: { listId: listId },
+        update: {}, // 기존 데이터 유지
+        create: {
+          listId: listId,
+          viewCount: 0,
+        },
+      }),
+    ]);
 
   // 캐시 무효화
   revalidateDbCache({
