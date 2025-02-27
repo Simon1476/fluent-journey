@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Heart,
   MessageCircle,
-  Eye,
   BookOpen,
   Volume2,
   Share2,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
+import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
 
 export default async function SharedListDetailPage({
   params,
@@ -27,6 +27,7 @@ export default async function SharedListDetailPage({
     redirect("/signin");
   }
   const { id } = await params;
+
   const sharedList = await getSharedWordListById(id);
   if (!sharedList) {
     redirect("/shared/lists");
@@ -72,13 +73,8 @@ export default async function SharedListDetailPage({
             <div className="flex flex-col gap-4">
               <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
                 <div className="grid grid-cols-3 gap-6 text-center">
-                  <div className="flex flex-col items-center">
-                    <Eye className="w-5 h-5 mb-1" />
-                    <span className="font-bold text-lg">
-                      {sharedList.viewCount}
-                    </span>
-                    <span className="text-xs opacity-80">Views</span>
-                  </div>
+                  <ViewCounter id={id} />
+
                   <div className="flex flex-col items-center">
                     <Heart className="w-5 h-5 mb-1" />
                     <span className="font-bold text-lg">
