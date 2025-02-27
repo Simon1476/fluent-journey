@@ -67,6 +67,7 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
       original: true,
       comments: true,
       likes: true,
+      stats: true,
       _count: {
         select: {
           comments: true,
