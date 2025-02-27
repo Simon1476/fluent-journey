@@ -8,7 +8,9 @@ interface SharedWordList {
   name: string;
   description: string | null;
   tags: string[];
-  viewCount: number;
+  stats: {
+    viewCount: number;
+  } | null;
   _count: {
     comments: number;
     likes: number;

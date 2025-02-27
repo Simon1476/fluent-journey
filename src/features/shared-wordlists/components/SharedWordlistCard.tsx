@@ -10,7 +10,9 @@ interface Props {
     name: string;
     description?: string | null;
     tags: string[];
-    viewCount: number;
+    stats: {
+      viewCount: number;
+    } | null;
     _count: {
       comments: number;
       likes: number;
@@ -80,7 +82,7 @@ export function SharedWordlistCard({ list, userId }: Props) {
               </span>
               <span className="flex items-center gap-1">
                 <Eye className="w-4 h-4 text-gray-400" />
-                {list.viewCount}
+                {list.stats ? list.stats.viewCount : 0}
               </span>
             </div>
             <span className="flex items-center gap-1 text-xs">
