@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
@@ -16,23 +17,54 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-import { createWordList } from "@/features/wordlists/server/actions/wordlists";
+import {
+  createWordList,
+  updateWordList,
+} from "@/features/wordlists/server/actions/wordlists";
 import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Book, Loader2 } from "lucide-react";
-export default function CreateWordListForm() {
+import { Book, Loader2, Plus } from "lucide-react";
+
+export default function WordListModal({
+  wordlist,
+  buttonText = "새 단어장 만들기",
+  title = "새 단어장 만들기",
+}: {
+  wordlist?: {
+    id: string;
+    title: string;
+    description: string | null;
+  };
+  buttonText?: string;
+  title?: string;
+}) {
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const form = useForm<z.infer<typeof wordListCreateSchema>>({
     resolver: zodResolver(wordListCreateSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-    },
+    defaultValues: wordlist
+      ? {
+          ...wordlist,
+          description: wordlist.description ?? "",
+        }
+      : {
+          title: "",
+          description: "",
+        },
   });
 
   async function onSubmit(values: z.infer<typeof wordListCreateSchema>) {
-    const data = await createWordList(values);
+    const action = wordlist
+      ? updateWordList.bind(null, wordlist.id)
+      : createWordList;
+    const data = await action(values);
     if (data.message) {
       toast({
         title: data.error ? "Error" : "Success",
@@ -40,16 +72,29 @@ export default function CreateWordListForm() {
         variant: data.error ? "destructive" : "default",
       });
     }
+
+    form.reset();
+    setOpen(false);
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-md border border-gray-200">
-      <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
-        <CardTitle className="flex items-center gap-2 text-indigo-800">
-          <Book className="w-5 h-5 text-indigo-600" />새 단어장 만들기
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-6">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="bg-indigo-50 hover:bg-indigo-100 border-indigo-200"
+        >
+          <Book className="w-4 h-4 mr-2 text-indigo-600" />
+          {buttonText}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px] bg-white rounded-xl shadow-2xl border-2 border-indigo-100">
+        <DialogHeader className="border-b pb-4 mb-4">
+          <DialogTitle className="text-2xl font-bold text-indigo-800 flex items-center">
+            <Plus className="w-6 h-6 mr-2 text-indigo-600" />
+            {title}
+          </DialogTitle>
+        </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* 제목 입력 */}
@@ -64,7 +109,7 @@ export default function CreateWordListForm() {
                   <FormControl>
                     <Input
                       placeholder="예: TOEIC 필수 단어"
-                      className="border border-gray-200 focus-visible:ring-indigo-400"
+                      className="border border-indigo-200 focus-visible:ring-indigo-400"
                       {...field}
                     />
                   </FormControl>
@@ -88,8 +133,9 @@ export default function CreateWordListForm() {
                   <FormControl>
                     <Textarea
                       placeholder="단어장에 대한 설명을 입력해주세요"
-                      className="min-h-24 border border-gray-200 focus-visible:ring-indigo-400"
+                      className="min-h-24 border border-indigo-200 focus-visible:ring-indigo-400"
                       {...field}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormDescription className="text-xs text-gray-500">
@@ -103,7 +149,7 @@ export default function CreateWordListForm() {
             {/* 제출 버튼 (로딩 상태 적용) */}
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-300"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (
@@ -111,13 +157,15 @@ export default function CreateWordListForm() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   처리 중...
                 </>
+              ) : wordlist ? (
+                "단어장 수정하기"
               ) : (
                 "단어장 만들기"
               )}
             </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }
