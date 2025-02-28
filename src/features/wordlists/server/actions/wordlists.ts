@@ -15,6 +15,7 @@ import {
   deleteUserWord as deleteUserWordDb,
   deleteWordlist as deleteWordlistDb,
   createWordlist as createWordlistDb,
+  updateWordlist as updateWordlistDb,
   addToSharedlist as addToSharedlistDb,
   deleteSharedWordlist as deleteSharedWordlistDb,
 } from "@/features/wordlists/server/db/wordlists";
@@ -38,6 +39,31 @@ export async function createWordList(
   const { id } = await createWordlistDb(userId, data);
 
   redirect(`/word/lists/${id}`);
+}
+
+export async function updateWordList(
+  id: string,
+  unsafeData: z.infer<typeof wordListCreateSchema>
+) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+  const errorMessage = "단어장을 수정하는 동안 오류가 발생했습니다";
+  const { success, data } = wordListCreateSchema.safeParse(unsafeData);
+
+  if (!success || userId == null) {
+    return {
+      error: true,
+      message: errorMessage,
+    };
+  }
+
+  const isSuccess = await updateWordlistDb({ id, userId }, data);
+
+  return {
+    error: !isSuccess,
+    message: isSuccess ? "단어장을 업데이트 했습니다." : errorMessage,
+  };
 }
 
 export async function createWord(

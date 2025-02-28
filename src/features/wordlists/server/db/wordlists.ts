@@ -48,7 +48,8 @@ export async function createWordlist(
   const newWordlist = await prisma.userWordList.create({
     data: {
       name: data.title,
-      userId,
+      description: data.description,
+      user: { connect: { id: userId } }, // 수정된 부분: userId를 사용하여 user 연결
     },
   });
 
@@ -59,6 +60,30 @@ export async function createWordlist(
   });
 
   return newWordlist;
+}
+
+export async function updateWordlist(
+  { id, userId }: { id: string; userId: string },
+  data: z.infer<typeof wordListCreateSchema>
+) {
+  const updateWordlist = await prisma.userWordList.update({
+    where: { id },
+    data: {
+      name: data.title,
+      description: data.description,
+    },
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: updateWordlist.id,
+    userId,
+  });
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.sharedWordlists,
+  });
+  return updateWordlist;
 }
 
 export async function addToSharedlist(

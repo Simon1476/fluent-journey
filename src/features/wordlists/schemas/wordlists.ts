@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const wordListCreateSchema = z.object({
   title: z.string().min(1, "제목을 입력해주세요"),
-  description: z.string().optional(),
+  description: z.string(),
 });
 
 export const wordListWordSchema = z.object({
