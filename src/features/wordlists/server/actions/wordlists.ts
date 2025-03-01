@@ -161,28 +161,6 @@ export async function addToSharedlist(
   };
 }
 
-export async function deleteSharedWordlist(
-  listId: string,
-  sharedListId: string
-) {
-  const session = await auth();
-  const accountId = session?.user.id;
-  const userId = await getUserId(accountId);
-
-  const errorMessage = "단어장 공유를 취소하지 못했습니다.";
-
-  if (userId == null) {
-    return { error: true, message: errorMessage };
-  }
-
-  const isSuccess = await deleteSharedWordlistDb(listId, sharedListId, userId);
-
-  return {
-    error: !isSuccess,
-    message: isSuccess ? "단어장 공유를 취소 했습니다." : errorMessage,
-  };
-}
-
 export async function deleteWordList(listId: string) {
   const session = await auth();
   const accountId = session?.user.id;
