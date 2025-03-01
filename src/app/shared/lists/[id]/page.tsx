@@ -5,17 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Heart,
-  MessageCircle,
-  BookOpen,
-  Volume2,
-  Share2,
-  Download,
-} from "lucide-react";
+import { Heart, MessageCircle, BookOpen, Share2, Download } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
+import VolumeButton from "@/features/shared-wordlists/components/VolumeButton";
 
 export default async function SharedListDetailPage({
   params,
@@ -163,13 +157,7 @@ export default async function SharedListDetailPage({
                           </h3>
                           <p className="text-gray-500 text-sm">{word.korean}</p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-full w-8 h-8"
-                        >
-                          <Volume2 className="w-4 h-4 text-blue-600" />
-                        </Button>
+                        <VolumeButton word={word.english} />
                       </div>
                     </CardHeader>
                   </div>

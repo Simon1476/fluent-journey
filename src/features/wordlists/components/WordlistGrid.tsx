@@ -1,10 +1,13 @@
+"use client";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Trash2, Volume2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DeleteWordAlertDialogContent } from "./DeleteWordAlertDialogContent";
 import { Badge } from "@/components/ui/badge";
 import { UpdateWordModal } from "./UpdateWordModal";
+import VolumeButton from "@/features/shared-wordlists/components/VolumeButton";
 
 interface Word {
   id: string;
@@ -75,13 +78,7 @@ export function WordlistCard({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full hover:bg-black/5"
-            >
-              <Volume2 className="h-4 w-4 text-gray-600" />
-            </Button>
+            <VolumeButton word={userWord.english} />
             <UpdateWordModal listId={listId} word={userWord} />
             <AlertDialog>
               <AlertDialogTrigger asChild>

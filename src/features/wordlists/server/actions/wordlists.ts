@@ -17,7 +17,6 @@ import {
   createWordlist as createWordlistDb,
   updateWordlist as updateWordlistDb,
   addToSharedlist as addToSharedlistDb,
-  deleteSharedWordlist as deleteSharedWordlistDb,
 } from "@/features/wordlists/server/db/wordlists";
 
 export async function createWordList(
