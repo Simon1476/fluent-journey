@@ -9,9 +9,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { cancelSharedWordlist } from "@/features/shared-wordlists/server/actions/shared-wordlists";
 import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
-import { deleteSharedWordlist } from "../server/actions/wordlists";
 
 interface DeleteAlertProps {
   title?: string;
@@ -43,7 +43,7 @@ export default function DeleteSharedListAlertDialogContent({
           className="bg-red-700"
           onClick={() => {
             startTransition(async () => {
-              const data = await deleteSharedWordlist(listId, sharedListId);
+              const data = await cancelSharedWordlist(listId, sharedListId);
               if (data.message) {
                 toast({
                   title: data.error ? "Error" : "Success",
