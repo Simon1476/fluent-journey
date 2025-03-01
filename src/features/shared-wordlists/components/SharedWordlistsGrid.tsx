@@ -8,6 +8,7 @@ interface SharedWordList {
   name: string;
   description: string | null;
   tags: string[];
+  isActive: boolean;
   stats: {
     viewCount: number;
   } | null;
@@ -38,9 +39,11 @@ export function SharedWordlistsGrid({ lists, userId }: Props) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {lists.map((list) => (
-        <SharedWordlistCard key={list.id} list={list} userId={userId} />
-      ))}
+      {lists
+        .filter((list) => list.isActive)
+        .map((list) => (
+          <SharedWordlistCard key={list.id} list={list} userId={userId} />
+        ))}
     </div>
   );
 }

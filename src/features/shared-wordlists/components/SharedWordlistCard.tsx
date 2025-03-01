@@ -10,6 +10,7 @@ interface Props {
     name: string;
     description?: string | null;
     tags: string[];
+    isActive: boolean;
     stats: {
       viewCount: number;
     } | null;
