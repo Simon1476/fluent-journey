@@ -5,13 +5,12 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function WordPage() {
-  const words = await getWords();
-
   const session = await auth();
 
   if (!session) {
     redirect("/signin");
   }
+  const words = await getWords();
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
