@@ -1,9 +1,8 @@
 "use client";
-
-import React, { useState } from "react";
+import { signOut } from "next-auth/react";
+import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
-
 import Link from "next/link";
 import { NAV_ITEMS } from "@/constants/index";
 
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { handleKakaoSignout } from "@/actions/authActions";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -61,7 +61,7 @@ const Navbar = () => {
           </nav>
 
           {/* 인증 버튼 / 프로필 */}
-          <div className="hidden md:flex items-center space-x-4 z-20">
+          <div className="hidden md:flex items-center space-x-4">
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -87,32 +87,65 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-48 bg-white dark:bg-zinc-950 shadow-lg border border-gray-200 dark:border-gray-800"
+                  className="w-48 shadow-lg border border-gray-200 dark:border-gray-800"
                 >
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-500 ">
+                  <DropdownMenuItem
+                    className={cn(
+                      "cursor-pointer focus:bg-gray-100 focus:text-gray-900",
+                      "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
+                    )}
+                  >
                     프로필 설정
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-500 dark:hover:bg-gray-800">
+                  <DropdownMenuItem
+                    className={cn(
+                      "cursor-pointer focus:bg-gray-100 focus:text-gray-900",
+                      "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
+                    )}
+                  >
                     학습 통계
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <DropdownMenuItem
+                    className={cn(
+                      "cursor-pointer focus:bg-gray-100 focus:text-gray-900",
+                      "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
+                    )}
+                  >
                     <Link href="/word/lists/create" className="w-full">
                       단어장 생성
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                  <DropdownMenuItem
+                    className={cn(
+                      "cursor-pointer focus:bg-gray-100 focus:text-gray-900",
+                      "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
+                    )}
+                  >
                     <Link href="/word/lists" className="w-full">
                       단어장 목록
                     </Link>
                   </DropdownMenuItem>
                   <form action={handleKakaoSignout}>
                     <DropdownMenuItem
-                      className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
-                      onClick={handleKakaoSignout}
+                      className={cn(
+                        "cursor-pointer text-red-600",
+                        "focus:bg-red-50 focus:text-red-700",
+                        "data-[highlighted]:bg-red-50 data-[highlighted]:text-red-700"
+                      )}
                     >
                       로그아웃
                     </DropdownMenuItem>
                   </form>
+                  <DropdownMenuItem
+                    className={cn(
+                      "cursor-pointer text-red-600",
+                      "focus:bg-red-50 focus:text-red-700",
+                      "data-[highlighted]:bg-red-50 data-[highlighted]:text-red-700"
+                    )}
+                    onClick={() => signOut()}
+                  >
+                    로그아웃
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
