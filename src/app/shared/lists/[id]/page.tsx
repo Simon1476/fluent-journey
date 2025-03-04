@@ -10,6 +10,8 @@ import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
 import VolumeButton from "@/features/shared-wordlists/components/VolumeButton";
+import { CommentSection } from "@/features/shared-wordlists/components/CommentSection";
+import { getCommentsByWordListId } from "@/features/shared-wordlists/server/db/comments";
 
 export default async function SharedListDetailPage({
   params,
@@ -23,6 +25,8 @@ export default async function SharedListDetailPage({
   const { id } = await params;
 
   const sharedList = await getSharedWordListById(id);
+  const comments = await getCommentsByWordListId(id);
+
   if (!sharedList) {
     redirect("/shared/lists");
   }
@@ -172,39 +176,7 @@ export default async function SharedListDetailPage({
           </div>
         </TabsContent>
 
-        <TabsContent value="comments" className="p-6">
-          <div className="space-y-4">
-            {sharedList.comments.length > 0 ? (
-              sharedList.comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="flex gap-4 p-4 bg-gray-50 rounded-xl"
-                >
-                  <Avatar className="h-10 w-10 rounded-xl">
-                    <AvatarImage src={comment.user.image || ""} />
-                    <AvatarFallback className="bg-blue-100 text-blue-800">
-                      {comment.user.name?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium">{comment.user.name}</span>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(comment.createdAt)}
-                      </span>
-                    </div>
-                    <p className="text-gray-700">{comment.content}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>No comments yet. Be the first to share your thoughts!</p>
-              </div>
-            )}
-          </div>
-        </TabsContent>
+        <CommentSection sharedList={sharedList} comments1={comments} />
       </Tabs>
     </div>
   );
