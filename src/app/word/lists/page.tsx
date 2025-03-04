@@ -6,18 +6,19 @@ import {
   Plus,
   Book,
   Trash2,
-  Share2,
   GraduationCap,
   Clock,
   Award,
+  Edit,
 } from "lucide-react";
 import { redirect } from "next/navigation";
+import { formatDate } from "@/lib/utils";
 import { getWordLists } from "@/features/wordlists/server/db/wordlists";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DeleteWordListButton } from "@/features/wordlists/components/DeleteWordListButton";
 import DeleteSharedListAlertDialogContent from "@/features/wordlists/components/DeleteSharedListAlertDialogContent";
 import AddToSharedWordListForm from "@/features/wordlists/components/AddToSharedWordListDialogContent";
-import { formatDate } from "@/lib/utils";
+import WordListModal from "@/features/wordlists/components/form/WordListModal";
 
 export default async function WordListsPage() {
   const session = await auth();
@@ -75,12 +76,7 @@ export default async function WordListsPage() {
             </div>
           </div>
 
-          <Link href="/word/lists/create">
-            <Button className="bg-blue-600 hover:bg-blue-700 shadow-md py-6 px-8 rounded-full">
-              <Plus className="w-5 h-5 mr-2" />
-              Create New Vocabulary List
-            </Button>
-          </Link>
+          <WordListModal />
         </div>
 
         {/* Word Lists Grid */}
@@ -129,59 +125,75 @@ export default async function WordListsPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 mt-4 pt-4 border-t">
+                  <div className="flex gap-2 mt-4 mb-4">
+                    <div className="flex-1">
+                      <WordListModal
+                        wordlist={{
+                          id: list.id,
+                          title: list.name,
+                          description: list.description,
+                        }}
+                        buttonText="단어장 수정"
+                        title="단어장 수정하기"
+                      />
+                    </div>
                     <Link href={`/word/lists/${list.id}`} className="flex-1">
                       <Button
                         variant="outline"
                         className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
                       >
+                        <Edit className="w-4 h-4 mr-2" />
                         Study
                       </Button>
                     </Link>
+                  </div>
 
-                    <div className="flex">
-                      {list.isPublic ? (
+                  <div className="flex gap-2 pt-4 border-t">
+                    {list.isPublic ? (
+                      <div className="flex-1">
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
                               variant="outline"
-                              className="border-red-200 text-red-600 hover:bg-red-50"
+                              className="w-full border-red-200 text-red-600 hover:bg-red-50"
                             >
-                              <Share2 className="w-4 h-4" />
+                              공유 취소
                             </Button>
                           </AlertDialogTrigger>
                           {list.sharedWordList && (
                             <DeleteSharedListAlertDialogContent
-                              title="단어장 공유를 그만하시겠습니까?t?"
+                              title="단어장 공유를 그만하시겠습니까?"
                               description="이 작업은 공유 단어장에서 선택한 단어장을 제거합니다."
                               listId={list.id}
                               sharedListId={list.sharedWordList.id}
                             />
                           )}
                         </AlertDialog>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div className="flex-1">
                         <AddToSharedWordListForm
                           listTitle={list.name}
                           listId={list.id}
                         />
-                      )}
+                      </div>
+                    )}
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-gray-400 hover:text-red-600 hover:bg-transparent"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <DeleteWordListButton
-                          listId={list.id}
-                          listName={list.name}
-                        />
-                      </AlertDialog>
-                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-gray-400 hover:text-red-600 hover:bg-transparent"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <DeleteWordListButton
+                        listId={list.id}
+                        listName={list.name}
+                      />
+                    </AlertDialog>
                   </div>
                 </CardContent>
               </Card>
