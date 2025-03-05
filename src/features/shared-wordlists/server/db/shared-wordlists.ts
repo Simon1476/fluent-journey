@@ -20,7 +20,7 @@ export async function getSharedWordLists(
 ) {
   const userId = await getUserId(accountId);
 
-  if (userId == null) return null;
+  if (userId == null) return [];
 
   const cacheFn = dbCache(getSharedWordlistsInternal, {
     tags: [
