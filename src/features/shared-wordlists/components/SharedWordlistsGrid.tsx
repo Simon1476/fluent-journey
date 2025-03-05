@@ -27,22 +27,34 @@ interface SharedWordList {
   };
 }
 
+interface BookMark {
+  userId: string;
+  id: string;
+  createdAt: Date;
+  listId: string;
+}
 interface Props {
   lists: SharedWordList[] | null;
-  userId?: string;
+  bookmarks: BookMark[];
 }
 
-export function SharedWordlistsGrid({ lists, userId }: Props) {
+export function SharedWordlistsGrid({ lists, bookmarks }: Props) {
   if (!lists?.length) {
     return <NoSharedWordlists />;
   }
+
+  const bookmarkedSet = new Set(bookmarks.map((bookmark) => bookmark.listId));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {lists
         .filter((list) => list.isActive)
         .map((list) => (
-          <SharedWordlistCard key={list.id} list={list} userId={userId} />
+          <SharedWordlistCard
+            key={list.id}
+            list={list}
+            isBookmarked={bookmarkedSet.has(list.id)}
+          />
         ))}
     </div>
   );
