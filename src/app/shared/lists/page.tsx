@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { SharedWordlistsGrid } from "@/features/shared-wordlists/components/SharedWordlistsGrid";
 import { SearchBar } from "@/features/shared-wordlists/components/filters/SearchBar";
 import { TagFilter } from "@/features/shared-wordlists/components/filters/TagFilter";
+import { getBookmarks } from "@/features/shared-wordlists/server/db/bookmark";
 import { getSharedWordLists } from "@/features/shared-wordlists/server/db/shared-wordlists";
 import { redirect } from "next/navigation";
 
@@ -21,6 +22,7 @@ export default async function SharedWordListsPage({
 
   const accountId = session.user.id;
   const lists = await getSharedWordLists(accountId, q, selectedTags);
+  const bookmarks = await getBookmarks(accountId);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -33,7 +35,7 @@ export default async function SharedWordListsPage({
         </div>
 
         {lists && lists.length > 0 ? (
-          <SharedWordlistsGrid lists={lists} userId={session?.user?.id} />
+          <SharedWordlistsGrid lists={lists} bookmarks={bookmarks} />
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">
