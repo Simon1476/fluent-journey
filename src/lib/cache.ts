@@ -11,6 +11,7 @@ export const CACHE_TAGS = {
   sharedWordlists: "sharedWordlists",
   userWords: "userWords",
   comments: "comments",
+  bookmarks: "bookmarks",
 } as const;
 
 export function getGlobalTag(tag: keyof typeof CACHE_TAGS) {
