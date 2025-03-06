@@ -366,6 +366,7 @@ async function getWordlistsInternal(userId: string) {
       sharedWordList: {
         select: {
           id: true,
+          name: true,
         },
       },
     },
@@ -377,6 +378,11 @@ async function getWordlistsByIdInternal(id: string) {
     where: { id },
     include: {
       words: true,
+      sharedWordList: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 }
