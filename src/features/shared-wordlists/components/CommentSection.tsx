@@ -70,10 +70,10 @@ interface SharedListProps {
 
 interface CommentSectionProps {
   sharedList: SharedListProps;
-  comments1: Comment[];
+  comments: Comment[];
 }
 
-export function CommentSection({ sharedList, comments1 }: CommentSectionProps) {
+export function CommentSection({ sharedList, comments }: CommentSectionProps) {
   const userId = useUserId();
   const [editComment, setEditComment] = useState<{
     id: string;
@@ -92,8 +92,8 @@ export function CommentSection({ sharedList, comments1 }: CommentSectionProps) {
     <TabsContent value="comments" className="p-6">
       <CommentForm listId={sharedList.id} editComment={null} />
       <div className="space-y-4 mt-6">
-        {comments1.length > 0 ? (
-          comments1.map((comment) => (
+        {comments.length > 0 ? (
+          comments.map((comment) => (
             <div
               key={comment.id}
               className="flex gap-4 p-4 bg-gray-50 rounded-xl relative group"
