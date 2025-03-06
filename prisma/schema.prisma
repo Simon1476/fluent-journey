@@ -78,14 +78,12 @@ model UserWordList {
 model UserWord {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   wordListId    String    @db.ObjectId
-  userId        String    @db.ObjectId // 단어를 추가한 사용자
-  wordId        String?   @db.ObjectId // 공식 단어 ID (공식 단어일 경우)
-  english       String // 커스텀 단어 지원을 위해 직접 저장
+  userId        String    @db.ObjectId
+  english       String
   korean        String
   level         String?
   example       String?
   pronunciation String?
-  isCustom      Boolean   @default(false) // 사용자가 추가한 단어인지 여부
   status        String? // 'known', 'learning', 'difficult' 등
   lastReviewed  DateTime?
   reviewCount   Int       @default(0)
@@ -95,8 +93,6 @@ model UserWord {
 
   wordList UserWordList @relation(fields: [wordListId], references: [id], onDelete: Cascade)
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([wordId])
 }
 
 model SharedWordList {
