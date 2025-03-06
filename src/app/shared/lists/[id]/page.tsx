@@ -176,7 +176,7 @@ export default async function SharedListDetailPage({
           </div>
         </TabsContent>
 
-        <CommentSection sharedList={sharedList} comments1={comments} />
+        <CommentSection sharedList={sharedList} comments={comments} />
       </Tabs>
     </div>
   );
