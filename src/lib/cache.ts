@@ -12,6 +12,7 @@ export const CACHE_TAGS = {
   userWords: "userWords",
   comments: "comments",
   bookmarks: "bookmarks",
+  likes: "likes",
 } as const;
 
 export function getGlobalTag(tag: keyof typeof CACHE_TAGS) {
