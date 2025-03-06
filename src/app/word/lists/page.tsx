@@ -103,8 +103,13 @@ export default async function WordListsPage() {
                       />
                     </div>
                     <Link className="flex-1" href={`/word/lists/${list.id}`}>
-                      <h3 className="text-xl font-bold text-gray-800 hover:text-blue-600 truncate">
+                      <h3 className="flex text-xl font-bold text-gray-800 hover:text-blue-600 truncate">
                         {list.name}
+                        {list.sharedWordList?.name && (
+                          <span className="bg-blue-100 text-blue-600 text-sm rounded-full ml-2 px-2 py-1">
+                            {list.sharedWordList.name}
+                          </span>
+                        )}
                       </h3>
                     </Link>
                   </div>
