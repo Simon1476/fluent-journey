@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { handleKakaoSignout } from "@/actions/authActions";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
@@ -125,17 +124,6 @@ const Navbar = () => {
                       단어장 목록
                     </Link>
                   </DropdownMenuItem>
-                  <form action={handleKakaoSignout}>
-                    <DropdownMenuItem
-                      className={cn(
-                        "cursor-pointer text-red-600",
-                        "focus:bg-red-50 focus:text-red-700",
-                        "data-[highlighted]:bg-red-50 data-[highlighted]:text-red-700"
-                      )}
-                    >
-                      로그아웃
-                    </DropdownMenuItem>
-                  </form>
                   <DropdownMenuItem
                     className={cn(
                       "cursor-pointer text-red-600",
