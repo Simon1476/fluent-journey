@@ -3,8 +3,9 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Eye, Book, MessageSquare, Heart, User, Bookmark } from "lucide-react";
 import Link from "next/link";
-import { toggleBookmark } from "../server/actions/bookmark";
 import { toast } from "@/hooks/use-toast";
+import { toggleBookmark } from "@/features/shared-wordlists/server/actions/bookmark";
+import { toggleLike } from "@/features/shared-wordlists/server/actions/like";
 
 interface Props {
   list: {
@@ -31,9 +32,16 @@ interface Props {
     };
   };
   isBookmarked: boolean;
+  isLiked: boolean;
+  likeCount: number;
 }
 
-export function SharedWordlistCard({ list, isBookmarked }: Props) {
+export function SharedWordlistCard({
+  list,
+  isBookmarked,
+  isLiked,
+  likeCount,
+}: Props) {
   const handleToggle = async () => {
     const data = await toggleBookmark(list.id);
     if (data) {
@@ -44,9 +52,19 @@ export function SharedWordlistCard({ list, isBookmarked }: Props) {
       });
     }
   };
+  const handleToggleLike = async () => {
+    const data = await toggleLike(list.id); // 좋아요 토글 처리
+    if (data) {
+      toast({
+        title: data.error ? "Error" : "Success",
+        description: data.message,
+        variant: data.error ? "destructive" : "default",
+      });
+    }
+  };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200">
+    <Card className="flex flex-col justify-between overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200">
       <Link href={`/shared/lists/${list.id}`}>
         <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50">
           <CardTitle className="flex items-center justify-between">
@@ -90,10 +108,21 @@ export function SharedWordlistCard({ list, isBookmarked }: Props) {
               <MessageSquare className="w-4 h-4 text-gray-400" />
               {list._count.comments}
             </span>
-            <span className="flex items-center gap-1">
-              <Heart className="w-4 h-4 text-gray-400" />
-              {list._count.likes}
-            </span>
+            <button
+              className={`flex gap-1 items-center text-gray-400 hover:text-indigo-600 transition-colors ${
+                isLiked ? "text-indigo-600" : ""
+              }`}
+              onClick={handleToggleLike}
+              aria-label="Toggle Like"
+            >
+              <Heart
+                className={`w-5 h-5 transition-colors ${
+                  isLiked ? "fill-red-600 text-red-600" : "text-gray-400"
+                }`}
+              />
+              {likeCount ? likeCount : 0}
+            </button>
+
             <span className="flex items-center gap-1">
               <Eye className="w-4 h-4 text-gray-400" />
               {list.stats ? list.stats.viewCount : 0}
