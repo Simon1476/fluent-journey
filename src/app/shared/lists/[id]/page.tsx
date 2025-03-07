@@ -2,16 +2,15 @@ import { auth } from "@/auth";
 import { getSharedWordListById } from "@/features/shared-wordlists/server/db/shared-wordlists";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, MessageCircle, BookOpen, Share2, Download } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
-import VolumeButton from "@/features/shared-wordlists/components/VolumeButton";
 import { CommentSection } from "@/features/shared-wordlists/components/CommentSection";
 import { getCommentsByWordListId } from "@/features/shared-wordlists/server/db/comments";
+import PaginatedWordsList from "@/features/shared-wordlists/components/pagination/PaginatedWordsList";
 
 export default async function SharedListDetailPage({
   params,
@@ -134,46 +133,7 @@ export default async function SharedListDetailPage({
         </TabsList>
 
         <TabsContent value="words" className="p-6">
-          <div className="grid gap-4">
-            {sharedList.original.words.map((word, index) => {
-              return (
-                <Card
-                  key={word.id}
-                  className="overflow-hidden border-0 shadow-sm hover:shadow transition-all duration-200"
-                >
-                  <div
-                    className={`flex items-stretch ${
-                      index % 2 === 0
-                        ? "bg-gradient-to-r from-blue-50 to-indigo-50"
-                        : "bg-gradient-to-r from-amber-50 to-yellow-50"
-                    }`}
-                  >
-                    <div className="min-w-16 bg-opacity-10 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-gray-300">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <CardHeader className="py-4 flex-1">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-800">
-                            {word.english}
-                          </h3>
-                          <p className="text-gray-500 text-sm">{word.korean}</p>
-                        </div>
-                        <VolumeButton word={word.english} />
-                      </div>
-                    </CardHeader>
-                  </div>
-                  {word?.example && (
-                    <CardContent className="py-3 px-6 bg-white border-t text-sm italic text-gray-600">
-                      &quot;{word.example}&quot;
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
+          <PaginatedWordsList words={sharedList.original.words} />
         </TabsContent>
 
         <CommentSection sharedList={sharedList} comments={comments} />
