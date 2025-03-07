@@ -16,6 +16,7 @@ import { formatDate } from "@/lib/utils";
 import { useUserId } from "@/hooks/use-userId";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import DeleteCommentAlertDialogContent from "./DeleteCommentAlertDialogContent";
+import CustomPagination from "@/components/CustomPagination";
 
 interface User {
   id: string;
@@ -68,17 +69,32 @@ interface SharedListProps {
   }[];
 }
 
-interface CommentSectionProps {
+interface Props {
   sharedList: SharedListProps;
   comments: Comment[];
 }
 
-export function CommentSection({ sharedList, comments }: CommentSectionProps) {
+const ITEMS_PER_PAGE = 10;
+
+export function CommentSection({ sharedList, comments }: Props) {
   const userId = useUserId();
   const [editComment, setEditComment] = useState<{
     id: string;
     content: string;
   } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(comments.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const visibleComments = comments.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleEditComment = (comment: { id: string; content: string }) => {
     setEditComment(comment);
@@ -89,11 +105,11 @@ export function CommentSection({ sharedList, comments }: CommentSectionProps) {
   };
 
   return (
-    <TabsContent value="comments" className="p-6">
+    <TabsContent value="comments" className="p-6 min-h-[600px]">
       <CommentForm listId={sharedList.id} editComment={null} />
       <div className="space-y-4 mt-6">
-        {comments.length > 0 ? (
-          comments.map((comment) => (
+        {visibleComments.length > 0 ? (
+          visibleComments.map((comment) => (
             <div
               key={comment.id}
               className="flex gap-4 p-4 bg-gray-50 rounded-xl relative group"
@@ -143,7 +159,7 @@ export function CommentSection({ sharedList, comments }: CommentSectionProps) {
                           id: comment.id,
                           content: comment.content,
                         })
-                      } // 댓글 수정 버튼
+                      }
                     >
                       <Edit className="w-4 h-4" />
                       <span>Edit</span>
@@ -169,6 +185,13 @@ export function CommentSection({ sharedList, comments }: CommentSectionProps) {
           </div>
         )}
       </div>
+      {totalPages > 1 && (
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </TabsContent>
   );
 }
