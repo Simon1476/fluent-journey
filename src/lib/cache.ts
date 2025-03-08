@@ -4,7 +4,8 @@ import { cache } from "react";
 export type ValidTags =
   | ReturnType<typeof getGlobalTag>
   | ReturnType<typeof getUserTag>
-  | ReturnType<typeof getIdTag>;
+  | ReturnType<typeof getIdTag>
+  | ReturnType<typeof getProfileTag>;
 
 export const CACHE_TAGS = {
   wordlists: "wordlists",
@@ -13,6 +14,11 @@ export const CACHE_TAGS = {
   comments: "comments",
   bookmarks: "bookmarks",
   likes: "likes",
+  profile: {
+    wordlists: "profile:wordlists",
+    sharedWordlists: "profile:sharedWordlists",
+    bookmarks: "profile:bookmarks",
+  },
 } as const;
 
 export function getGlobalTag(tag: keyof typeof CACHE_TAGS) {
@@ -25,6 +31,13 @@ export function getUserTag(userId: string, tag: keyof typeof CACHE_TAGS) {
 
 export function getIdTag(id: string, tag: keyof typeof CACHE_TAGS) {
   return `id:${id}-${CACHE_TAGS[tag]}` as const;
+}
+
+export function getProfileTag(
+  userId: string,
+  tag: keyof typeof CACHE_TAGS.profile
+) {
+  return `user:${userId}-${CACHE_TAGS.profile[tag]}`;
 }
 
 export function clearFullCache() {
