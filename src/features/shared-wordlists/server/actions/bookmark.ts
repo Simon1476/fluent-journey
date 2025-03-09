@@ -1,9 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { CACHE_TAGS, revalidateDbCache } from "@/lib/cache";
+import { CACHE_TAGS, getProfileTag, revalidateDbCache } from "@/lib/cache";
 import { auth } from "@/auth";
 import { getUserId } from "@/lib/utils";
+import { revalidateTag } from "next/cache";
 
 export async function toggleBookmark(listId: string) {
   const session = await auth();
@@ -38,6 +39,7 @@ export async function toggleBookmark(listId: string) {
       userId: userId,
     });
 
+    revalidateTag(getProfileTag(userId, CACHE_TAGS.profile.bookmarks));
     return {
       error: false,
       message: "즐겨찾기에서 삭제했습니다.",
@@ -54,6 +56,8 @@ export async function toggleBookmark(listId: string) {
       tag: CACHE_TAGS.bookmarks,
       userId: userId,
     });
+
+    revalidateTag(getProfileTag(userId, CACHE_TAGS.profile.bookmarks));
 
     return {
       error: false,
