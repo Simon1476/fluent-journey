@@ -15,9 +15,9 @@ export const CACHE_TAGS = {
   bookmarks: "bookmarks",
   likes: "likes",
   profile: {
-    wordlists: "profile:wordlists",
-    sharedWordlists: "profile:sharedWordlists",
-    bookmarks: "profile:bookmarks",
+    wordlists: "wordlists",
+    sharedWordlists: "sharedWordlists",
+    bookmarks: "bookmarks",
   },
 } as const;
 
