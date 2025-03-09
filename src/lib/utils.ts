@@ -20,7 +20,7 @@ export async function getUserId(accountId: string | undefined) {
 
 export const formatDate = (
   date: Date | string | null,
-  formatStr: string = "yyyy-MM-dd HH:mm"
+  formatStr: string = "yyyy-MM-dd"
 ) => {
   if (!date) return "";
 
