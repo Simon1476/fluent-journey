@@ -31,35 +31,42 @@ export default async function SharedListDetailPage({
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
-      {/* 상단 헤더 섹션 */}
+    <div className="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+      {/* 상단 헤더 섹션 - 모바일 반응형 개선 */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg mb-8 overflow-hidden">
-        <div className="p-8 text-white">
-          <div className="flex items-start justify-between">
-            <div className="space-y-4 max-w-2xl">
+        <div className="p-4 sm:p-6 md:p-8 text-white">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+            {/* 왼쪽 정보 섹션 */}
+            <div className="space-y-4 w-full md:max-w-2xl">
               <div className="flex items-center gap-2">
-                <Avatar className="h-10 w-10 border-2 border-white">
+                <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white">
                   <AvatarImage src={sharedList.user.image || ""} />
                   <AvatarFallback className="bg-indigo-400">
                     {sharedList.user.name?.[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{sharedList.user.name}</p>
+                  <p className="font-medium text-sm sm:text-base">
+                    {sharedList.user.name}
+                  </p>
                   <p className="text-xs opacity-80">
                     {formatDate(sharedList.createdAt)}
                   </p>
                 </div>
               </div>
 
-              <h1 className="text-3xl font-bold">{sharedList.name}</h1>
-              <p className="text-white/80">{sharedList.description}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                {sharedList.name}
+              </h1>
+              <p className="text-white/80 text-sm sm:text-base">
+                {sharedList.description}
+              </p>
 
               <div className="flex flex-wrap gap-2">
                 {sharedList.tags.map((tag) => (
                   <Badge
                     key={tag}
-                    className="bg-white/20 hover:bg-white/30 text-white border-none"
+                    className="bg-white/20 hover:bg-white/30 text-white border-none text-xs"
                   >
                     {tag}
                   </Badge>
@@ -67,21 +74,23 @@ export default async function SharedListDetailPage({
               </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                <div className="grid grid-cols-3 gap-6 text-center">
+            {/* 오른쪽 통계 및 버튼 섹션 */}
+            <div className="flex flex-col gap-4 w-full md:w-auto">
+              {/* 통계 정보 */}
+              <div className="bg-white/10 rounded-lg p-3 sm:p-4 backdrop-blur-sm w-full">
+                <div className="grid grid-cols-3 gap-2 sm:gap-6 text-center">
                   <ViewCounter id={id} />
 
                   <div className="flex flex-col items-center">
-                    <Heart className="w-5 h-5 mb-1" />
-                    <span className="font-bold text-lg">
+                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 mb-1" />
+                    <span className="font-bold text-base sm:text-lg">
                       {sharedList._count.likes}
                     </span>
                     <span className="text-xs opacity-80">Likes</span>
                   </div>
                   <div className="flex flex-col items-center">
-                    <MessageCircle className="w-5 h-5 mb-1" />
-                    <span className="font-bold text-lg">
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mb-1" />
+                    <span className="font-bold text-base sm:text-lg">
                       {sharedList._count.comments}
                     </span>
                     <span className="text-xs opacity-80">Comments</span>
@@ -89,22 +98,29 @@ export default async function SharedListDetailPage({
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <Button className="bg-white text-indigo-700 hover:bg-white/90">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Study Now
+              {/* 액션 버튼 */}
+              <div className="flex gap-2 justify-center sm:justify-end">
+                <Button
+                  size="sm"
+                  className="bg-white text-indigo-700 hover:bg-white/90 text-xs sm:text-sm"
+                >
+                  <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">Study Now</span>
+                  <span className="inline xs:hidden">Study</span>
                 </Button>
                 <Button
+                  size="sm"
                   variant="ghost"
-                  className="bg-white/10 text-white hover:bg-white/20"
+                  className="bg-white/10 text-white hover:bg-white/20 px-2"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
                 <Button
+                  size="sm"
                   variant="ghost"
-                  className="bg-white/10 text-white hover:bg-white/20"
+                  className="bg-white/10 text-white hover:bg-white/20 px-2"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </div>
             </div>
@@ -120,19 +136,19 @@ export default async function SharedListDetailPage({
         <TabsList className="bg-gray-50 p-1 w-full border-b overflow-hidden">
           <TabsTrigger
             value="words"
-            className="text-sm font-medium py-3 rounded-lg"
+            className="text-xs sm:text-sm font-medium py-2 sm:py-3 rounded-lg"
           >
             Vocabulary List
           </TabsTrigger>
           <TabsTrigger
             value="comments"
-            className="text-sm font-medium py-3 rounded-lg"
+            className="text-xs sm:text-sm font-medium py-2 sm:py-3 rounded-lg"
           >
             Discussion
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="words" className="p-6">
+        <TabsContent value="words" className="p-4 sm:p-6">
           <PaginatedWordsList words={sharedList.original.words} />
         </TabsContent>
 
