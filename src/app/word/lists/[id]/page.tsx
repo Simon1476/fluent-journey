@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Flashcards from "@/components/Flashcards ";
+import Flashcards from "@/components/Flashcards";
 
 interface Props {
   params: Promise<{ id: string }>;

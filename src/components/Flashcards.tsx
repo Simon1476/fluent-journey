@@ -64,7 +64,7 @@ export default function Flashcards({ words }: FlashcardsProps) {
               </div>
             )}
             <div className="mt-2 sm:mt-4 text-xs text-blue-600">
-              Click to {showFront ? "see meaning" : "see word"}
+              {showFront ? "뜻 보기" : "단어 보기"}
             </div>
           </div>
         </Card>
@@ -79,25 +79,15 @@ export default function Flashcards({ words }: FlashcardsProps) {
         </Button>
       </div>
 
-      {currentWord.example && (
-        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4">
-          <span className="font-medium">Example:</span> {currentWord.example}
+      {currentWord.example ? (
+        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em]">
+          <span className="font-medium">예문:</span> {currentWord.example}
+        </div>
+      ) : (
+        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em] flex items-center justify-center">
+          예문 없음
         </div>
       )}
-
-      <div className="flex gap-2 mt-2 sm:mt-4">
-        <div
-          className={`px-2 py-1 rounded text-xs ${
-            currentWord.level === "BEGINNER"
-              ? "bg-green-100 text-green-700"
-              : currentWord.level === "INTERMEDIATE"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {currentWord.level ? currentWord.level.toLowerCase() : "N/A"}
-        </div>
-      </div>
     </div>
   );
 }
