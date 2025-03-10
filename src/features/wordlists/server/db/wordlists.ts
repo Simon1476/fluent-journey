@@ -41,6 +41,39 @@ export async function getWordListById(accountId: string, wordListId: string) {
   return cacheFn(wordListId);
 }
 
+export async function createWordlistWithWords(
+  userId: string,
+  data: z.infer<typeof wordListCreateSchema>
+) {
+  const newWordlist = await prisma.userWordList.create({
+    data: {
+      name: data.title,
+      description: data.description,
+      user: { connect: { id: userId } },
+    },
+  });
+
+  if (data.words?.length) {
+    await prisma.userWord.createMany({
+      data: data.words.map((word) => ({
+        wordListId: newWordlist.id,
+        userId: userId,
+        english: word.english,
+        korean: word.korean,
+        example: word.example,
+      })),
+    });
+  }
+
+  revalidateDbCache({
+    tag: CACHE_TAGS.wordlists,
+    id: newWordlist.id,
+    userId,
+  });
+
+  return newWordlist;
+}
+
 export async function createWordlist(
   userId: string,
   data: z.infer<typeof wordListCreateSchema>
