@@ -14,9 +14,9 @@ import {
   updateUserWord as updateUserWordDb,
   deleteUserWord as deleteUserWordDb,
   deleteWordlist as deleteWordlistDb,
-  createWordlist as createWordlistDb,
   updateWordlist as updateWordlistDb,
   addToSharedlist as addToSharedlistDb,
+  createWordlistWithWords as createWordlistWithWordsDb,
 } from "@/features/wordlists/server/db/wordlists";
 
 export async function createWordList(
@@ -35,7 +35,7 @@ export async function createWordList(
     };
   }
 
-  const { id } = await createWordlistDb(userId, data);
+  const { id } = await createWordlistWithWordsDb(userId, data);
 
   redirect(`/word/lists/${id}`);
 }
