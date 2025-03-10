@@ -12,6 +12,16 @@ import { CommentSection } from "@/features/shared-wordlists/components/CommentSe
 import { getCommentsByWordListId } from "@/features/shared-wordlists/server/db/comments";
 import PaginatedWordsList from "@/features/shared-wordlists/components/pagination/PaginatedWordsList";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import Flashcards from "@/components/Flashcards";
+
 export default async function SharedListDetailPage({
   params,
 }: {
@@ -100,14 +110,26 @@ export default async function SharedListDetailPage({
 
               {/* 액션 버튼 */}
               <div className="flex gap-2 justify-center sm:justify-end">
-                <Button
-                  size="sm"
-                  className="bg-white text-indigo-700 hover:bg-white/90 text-xs sm:text-sm"
-                >
-                  <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  <span className="hidden xs:inline">Study Now</span>
-                  <span className="inline xs:hidden">Study</span>
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="bg-white text-indigo-700 hover:bg-white/90 text-xs sm:text-sm"
+                    >
+                      <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      단어 테스트
+                    </Button>
+                  </DialogTrigger>
+                  <DialogOverlay className="bg-black/50" />
+                  <DialogContent className="max-w-2xl bg-white sm:rounded">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-semibold">
+                        단어 학습
+                      </DialogTitle>
+                    </DialogHeader>
+                    <Flashcards words={sharedList.original.words} />
+                  </DialogContent>
+                </Dialog>
                 <Button
                   size="sm"
                   variant="ghost"
