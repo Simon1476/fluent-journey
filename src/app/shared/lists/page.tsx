@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getProfileLikes } from "@/features/profile/server/db/profile";
 import { SharedWordlistsGrid } from "@/features/shared-wordlists/components/SharedWordlistsGrid";
 import { BookmarkFilter } from "@/features/shared-wordlists/components/filters/BookmarkFilter";
 import { SearchBar } from "@/features/shared-wordlists/components/filters/SearchBar";
@@ -26,6 +27,7 @@ export default async function SharedWordListsPage({
   const lists = await getSharedWordLists(accountId, q, selectedTags);
   const bookmarks = await getBookmarks(accountId);
   const likes = await getLikes(accountId);
+  const userLikes = await getProfileLikes(accountId);
 
   const filteredLists =
     bookmarksOnly === "true"
@@ -52,6 +54,7 @@ export default async function SharedWordListsPage({
             lists={filteredLists}
             bookmarks={bookmarks}
             likes={likes}
+            userLikes={userLikes}
           />
         ) : (
           <div className="text-center py-12">
