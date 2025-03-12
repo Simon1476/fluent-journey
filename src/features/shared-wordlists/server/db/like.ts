@@ -37,7 +37,6 @@ export async function toggleLike(listId: string, userId: string) {
   } else {
     await prisma.like.create({
       data: {
-        id: listId,
         userId: userId,
         listId: listId,
       },
