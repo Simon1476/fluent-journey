@@ -8,7 +8,7 @@ interface SharedWordList {
   name: string;
   description: string | null;
   tags: string[];
-  isActive: boolean;
+  isActive: boolean; // 공유 여부
   stats: {
     viewCount: number;
   } | null;
@@ -45,15 +45,21 @@ interface Props {
   lists: SharedWordList[] | null;
   bookmarks: BookMark[];
   likes: Like[];
+  userLikes: { listId: string }[];
 }
 
-export function SharedWordlistsGrid({ lists, bookmarks, likes }: Props) {
+export function SharedWordlistsGrid({
+  lists,
+  bookmarks,
+  likes,
+  userLikes,
+}: Props) {
   if (!lists?.length) {
     return <NoSharedWordlists />;
   }
 
   const bookmarkedSet = new Set(bookmarks.map((bookmark) => bookmark.listId));
-  const likedSet = new Set(likes.map((like) => like.listId));
+  const userLikedSet = new Set(userLikes.map((like) => like.listId));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -68,8 +74,8 @@ export function SharedWordlistsGrid({ lists, bookmarks, likes }: Props) {
               key={list.id}
               list={list}
               isBookmarked={bookmarkedSet.has(list.id)}
-              isLiked={likedSet.has(list.id)}
-              likeCount={listLikes} // 수정된 부분
+              isLiked={userLikedSet.has(list.id)}
+              likeCount={listLikes}
             />
           );
         })}
