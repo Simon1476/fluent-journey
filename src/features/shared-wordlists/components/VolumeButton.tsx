@@ -9,7 +9,7 @@ export default function VolumeButton({ word }: { word: string }) {
     <Button
       variant="ghost"
       size="icon"
-      className="rounded-full w-8 h-8"
+      className="rounded-full w-8 h-8 hover:bg-blue-300 hover:border-blue-300"
       onClick={() => speakWord(word)}
     >
       <Volume2 className="w-4 h-4 text-blue-600" />
