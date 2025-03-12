@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Flashcards from "@/components/Flashcards";
+import { getWordLists } from "@/features/wordlists/server/db/wordlists";
 
 export default async function SharedListDetailPage({
   params,
@@ -33,8 +34,10 @@ export default async function SharedListDetailPage({
   }
   const { id } = await params;
 
+  const accountId = session.user.id;
   const sharedList = await getSharedWordListById(id);
   const comments = await getCommentsByWordListId(id);
+  const wordLists = await getWordLists(accountId);
 
   if (!sharedList) {
     redirect("/shared/lists");
@@ -171,7 +174,10 @@ export default async function SharedListDetailPage({
         </TabsList>
 
         <TabsContent value="words" className="p-4 sm:p-6">
-          <PaginatedWordsList words={sharedList.original.words} />
+          <PaginatedWordsList
+            words={sharedList.original.words}
+            wordLists={wordLists}
+          />
         </TabsContent>
 
         <CommentSection sharedList={sharedList} comments={comments} />
