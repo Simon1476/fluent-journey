@@ -80,13 +80,11 @@ export default function Flashcards({ words }: FlashcardsProps) {
       </div>
 
       {currentWord.example ? (
-        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em]">
+        <div className="flex flex-grow justify-center items-center w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em]">
           <span className="font-medium">예문:</span> {currentWord.example}
         </div>
       ) : (
-        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em] flex items-center justify-center">
-          예문 없음
-        </div>
+        <div className="w-full max-w-md text-xs sm:text-sm text-gray-600 text-center mt-2 sm:mt-4 px-4 min-h-[3em] flex items-center justify-center"></div>
       )}
     </div>
   );
