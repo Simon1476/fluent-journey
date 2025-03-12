@@ -35,6 +35,17 @@ export async function getProfileBookmarks(accountId: string) {
   return cacheFn(userId);
 }
 
+export async function getProfileLikes(accountId: string) {
+  const userId = await getUserId(accountId);
+
+  if (userId == null) return [];
+  const cacheFn = dbCache(getProfileLikesInternal, {
+    tags: [getProfileTag(userId, "likes")],
+  });
+
+  return cacheFn(userId);
+}
+
 async function getProfileWordListsInternal(userId: string) {
   const wordlists = await prisma.userWordList.findMany({
     where: { userId },
@@ -60,4 +71,15 @@ async function getProfileBookmarksInternal(userId: string) {
   });
 
   return bookmarks;
+}
+
+async function getProfileLikesInternal(userId: string) {
+  const likes = await prisma.like.findMany({
+    where: { userId: userId },
+    select: {
+      listId: true,
+    },
+  });
+
+  return likes;
 }
