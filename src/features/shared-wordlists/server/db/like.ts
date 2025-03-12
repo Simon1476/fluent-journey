@@ -65,15 +65,11 @@ export async function getLikes(accountId: string) {
     ],
   });
 
-  return cacheFn(userId);
+  return cacheFn();
 }
 
-async function getLikesInternal(userId: string) {
-  const likes = await prisma.like.findMany({
-    where: {
-      userId: userId,
-    },
-  });
+async function getLikesInternal() {
+  const likes = await prisma.like.findMany();
 
   return likes;
 }
