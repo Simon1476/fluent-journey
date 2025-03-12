@@ -16,6 +16,7 @@ import {
   deleteWordlist as deleteWordlistDb,
   updateWordlist as updateWordlistDb,
   addToSharedlist as addToSharedlistDb,
+  copyWordToList as copyWordToListDb,
   createWordlistWithWords as createWordlistWithWordsDb,
 } from "@/features/wordlists/server/db/wordlists";
 
@@ -62,6 +63,31 @@ export async function updateWordList(
   return {
     error: !isSuccess,
     message: isSuccess ? "단어장을 업데이트 했습니다." : errorMessage,
+  };
+}
+
+export async function copyWordToList(
+  listId: string,
+  unsafeData: z.infer<typeof wordListWordSchema>
+) {
+  const session = await auth();
+  const accountId = session?.user.id;
+  const userId = await getUserId(accountId);
+
+  const { success, data } = wordListWordSchema.safeParse(unsafeData);
+
+  if (!success || userId == null) {
+    return {
+      error: true,
+      message: "단어장에 단어를 복사하지 못했습니다.",
+    };
+  }
+
+  await copyWordToListDb(listId, data, userId);
+
+  return {
+    error: false,
+    message: "단어장에 단어를 복사했습니다.",
   };
 }
 

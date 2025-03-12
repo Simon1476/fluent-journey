@@ -12,7 +12,6 @@ import {
   CACHE_TAGS,
   revalidateDbCache,
   dbCache,
-  // getGlobalTag,
   getUserTag,
   getIdTag,
 } from "@/lib/cache";
@@ -20,7 +19,7 @@ import {
 export async function getWordLists(accountId: string) {
   const userId = await getUserId(accountId);
 
-  if (userId == null) return null;
+  if (userId == null) return [];
 
   const cacheFn = dbCache(getWordlistsInternal, {
     tags: [getUserTag(userId, CACHE_TAGS.wordlists)],
@@ -82,7 +81,7 @@ export async function createWordlist(
     data: {
       name: data.title,
       description: data.description,
-      user: { connect: { id: userId } }, // 수정된 부분: userId를 사용하여 user 연결
+      user: { connect: { id: userId } },
     },
   });
 
@@ -131,7 +130,7 @@ export async function addToSharedlist(
     }),
 
     prisma.sharedWordList.upsert({
-      where: { originalId: listId }, // unique 조건으로 upsert
+      where: { originalId: listId },
       update: {
         isActive: true,
       },
@@ -176,7 +175,6 @@ export async function addToSharedlist(
 }
 
 export async function deleteWordlist(listId: string, userId: string) {
-  // 1. 단어장 조회 및 공유 여부 확인
   const wordList = await prisma.userWordList.findUnique({
     where: { id: listId, userId },
     include: { sharedWordList: true },
@@ -186,7 +184,6 @@ export async function deleteWordlist(listId: string, userId: string) {
     return false;
   }
 
-  // 2. 트랜잭션 실행
   const isSuccess = await prisma.$transaction(async (tx) => {
     // 공유된 단어장이 있는 경우에만 관련 테이블 삭제
     if (wordList.sharedWordList) {
@@ -211,13 +208,51 @@ export async function deleteWordlist(listId: string, userId: string) {
 
   if (!isSuccess) return false;
 
-  // 3. 캐시 무효화
   revalidateDbCache({ tag: CACHE_TAGS.wordlists, id: listId, userId });
   if (wordList.sharedWordList) {
     revalidateDbCache({ tag: CACHE_TAGS.sharedWordlists });
   }
 
   return true;
+}
+
+export async function copyWordToList(
+  listId: string,
+  data: z.infer<typeof wordListWordSchema>,
+  userId: string
+) {
+  try {
+    const result = await prisma.userWord.create({
+      data: {
+        english: data.english,
+        korean: data.korean,
+        level: data.level,
+        pronunciation: data.pronunciation,
+        example: data.example,
+        wordList: { connect: { id: listId } },
+        user: { connect: { id: userId } },
+      },
+    });
+
+    revalidateDbCache({
+      tag: CACHE_TAGS.userWords,
+      id: userId,
+    });
+
+    // 원본 단어장 캐시 무효화
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      userId: userId,
+      id: listId,
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error copying word to list:", error);
+    const errorMessage = "단어를 단어장에 복사하는 데 실패했습니다.";
+
+    return { error: true, message: errorMessage };
+  }
 }
 
 export async function createUserWord(
@@ -347,7 +382,6 @@ export async function deleteUserWord(
   return true;
 }
 
-// 단어장 이름 수정 등의 업데이트를 위한 함수 추가
 export async function updateWordList(
   listId: string,
   userId: string,
