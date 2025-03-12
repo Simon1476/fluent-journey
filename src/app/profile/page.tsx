@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WordLists } from "@/features/profile/components/WordLists";
 import {
   getProfileBookmarks,
+  getProfileLikes,
   getProfileSharedWordLists,
   getProfileWordLists,
 } from "@/features/profile/server/db/profile";
@@ -10,7 +11,6 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SharedWordLists } from "@/features/profile/components/SharedWordLists";
 import { Bookmarks } from "@/features/profile/components/Bookmarks";
-import { getLikes } from "@/features/shared-wordlists/server/db/like";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -25,7 +25,7 @@ export default async function ProfilePage() {
     getProfileWordLists(accountId),
     getProfileSharedWordLists(accountId),
     getProfileBookmarks(accountId),
-    getLikes(accountId),
+    getProfileLikes(accountId),
   ]);
 
   return (
