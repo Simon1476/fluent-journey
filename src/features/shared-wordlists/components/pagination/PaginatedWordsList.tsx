@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import VolumeButton from "@/features/shared-wordlists/components/VolumeButton";
 import CustomPagination from "@/components/CustomPagination";
+import { CopyToWordListButton } from "@/features/wordlists/components/CopyToWordListButton";
 
 const ITEMS_PER_PAGE = 15;
 
@@ -24,10 +25,17 @@ interface Word {
   note: string | null;
 }
 
+interface WordList {
+  id: string;
+  name: string;
+  description?: string | null;
+}
+
 interface Props {
   words: Word[];
+  wordLists: WordList[];
 }
-export default function PaginatedWordsList({ words = [] }: Props) {
+export default function PaginatedWordsList({ words = [], wordLists }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(words.length / ITEMS_PER_PAGE);
@@ -54,6 +62,14 @@ export default function PaginatedWordsList({ words = [] }: Props) {
       <div className="grid gap-4 min-h-96">
         {visibleWords.map((word, index) => {
           const globalIndex = startIndex + index;
+          const data = {
+            english: word.english,
+            korean: word.korean,
+            example: word.example,
+            pronunciation: word.pronunciation,
+            level: word.level,
+          };
+
           return (
             <Card
               key={word.id || globalIndex}
@@ -79,7 +95,10 @@ export default function PaginatedWordsList({ words = [] }: Props) {
                       </h3>
                       <p className="text-gray-500 text-sm">{word.korean}</p>
                     </div>
-                    <VolumeButton word={word.english} />
+                    <div>
+                      <VolumeButton word={word.english} />
+                      <CopyToWordListButton wordLists={wordLists} data={data} />
+                    </div>
                   </div>
                 </CardHeader>
               </div>
