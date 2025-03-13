@@ -66,7 +66,19 @@ async function getProfileBookmarksInternal(userId: string) {
   const bookmarks = await prisma.sharedWordListBookmark.findMany({
     where: { userId },
     include: {
-      sharedList: true,
+      sharedList: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          tags: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 
