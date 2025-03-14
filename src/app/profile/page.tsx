@@ -6,11 +6,13 @@ import {
   getProfileLikes,
   getProfileSharedWordLists,
   getProfileWordLists,
+  getUserSharedWordListLikes,
 } from "@/features/profile/server/db/profile";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SharedWordLists } from "@/features/profile/components/SharedWordLists";
 import { Bookmarks } from "@/features/profile/components/Bookmarks";
+import { getUserId } from "@/lib/utils";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -20,13 +22,16 @@ export default async function ProfilePage() {
 
   const user = session.user;
   const accountId = session.user.id;
+  const userId = await getUserId(accountId);
 
-  const [wordlists, sharedWordlists, bookmarks, likes] = await Promise.all([
-    getProfileWordLists(accountId),
-    getProfileSharedWordLists(accountId),
-    getProfileBookmarks(accountId),
-    getProfileLikes(accountId),
-  ]);
+  const [wordlists, sharedWordlists, bookmarks, likes, sharedWordlistsLikes] =
+    await Promise.all([
+      getProfileWordLists(accountId),
+      getProfileSharedWordLists(accountId),
+      getProfileBookmarks(accountId),
+      getProfileLikes(accountId),
+      getUserSharedWordListLikes(accountId),
+    ]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -115,7 +120,11 @@ export default async function ProfilePage() {
           </TabsList>
 
           <WordLists wordLists={wordlists} />
-          <SharedWordLists sharedLists={sharedWordlists} />
+          <SharedWordLists
+            sharedLists={sharedWordlists}
+            sharedWordlistsLikes={sharedWordlistsLikes}
+            userId={userId}
+          />
           <Bookmarks bookmarks={bookmarks} />
         </Tabs>
       </div>

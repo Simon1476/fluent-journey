@@ -12,8 +12,6 @@ interface SharedWordlist {
 }
 
 interface SharedWordlistsLikes {
-  id: string;
-  createdAt: Date;
   userId: string;
   listId: string;
 }

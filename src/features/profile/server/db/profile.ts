@@ -46,11 +46,11 @@ export async function getProfileLikes(accountId: string) {
   return cacheFn(userId);
 }
 
-export async function getUserSharedWordListsLikeCount(accountId: string) {
+export async function getUserSharedWordListLikes(accountId: string) {
   const userId = await getUserId(accountId);
 
   if (userId == null) return [];
-  const cacheFn = dbCache(getUserSharedWordListLikeCountInternal, {
+  const cacheFn = dbCache(getUserSharedWordListLikesInternal, {
     tags: [getProfileTag(userId, "likes")],
   });
 
@@ -115,7 +115,7 @@ async function getProfileLikesInternal(userId: string) {
   return likes;
 }
 
-async function getUserSharedWordListLikeCountInternal(userId: string) {
+async function getUserSharedWordListLikesInternal(userId: string) {
   const sharedWordlists = await prisma.sharedWordList.findMany({
     where: { userId },
     select: {
@@ -126,11 +126,12 @@ async function getUserSharedWordListLikeCountInternal(userId: string) {
   // sharedWordlists의 id를 배열로 변환
   const sharedWordlistIds = sharedWordlists.map((wordlist) => wordlist.id);
 
-  const wordlists = await prisma.like.findMany({
+  const likes = await prisma.like.findMany({
     where: {
-      listId: { in: sharedWordlistIds }, // sharedWordListId 대신 listId 사용
+      listId: { in: sharedWordlistIds },
     },
+    select: { listId: true, userId: true },
   });
 
-  return wordlists;
+  return likes;
 }
