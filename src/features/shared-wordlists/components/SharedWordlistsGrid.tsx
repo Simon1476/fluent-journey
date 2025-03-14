@@ -1,5 +1,3 @@
-"use client";
-
 import { SharedWordlistCard } from "./SharedWordlistCard";
 import { NoSharedWordlists } from "./NoSharedWordlists";
 
