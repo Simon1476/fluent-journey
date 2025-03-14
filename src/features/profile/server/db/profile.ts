@@ -75,11 +75,6 @@ async function getProfileSharedWordListsInternal(userId: string) {
       description: true,
       tags: true,
       isActive: true,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
     },
   });
 
