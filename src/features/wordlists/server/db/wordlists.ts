@@ -309,17 +309,6 @@ export async function updateUserWord(
   userId: string,
   data: z.infer<typeof wordListWordSchema>
 ) {
-  const isShared = await prisma.userWordList.findUnique({
-    where: {
-      id: listId,
-      userId: userId,
-    },
-    include: {
-      sharedWordList: true,
-    },
-  });
-
-  // 권한 확인
   const wordList = await getUserWordListInternal(listId, userId);
 
   if (!wordList) return false;
@@ -335,10 +324,10 @@ export async function updateUserWord(
     userId,
   });
 
-  if (isShared?.sharedWordList) {
+  if (wordList.sharedWordList?.id) {
     revalidateDbCache({
       tag: CACHE_TAGS.sharedWordlists,
-      id: isShared.sharedWordList.id,
+      id: wordList.sharedWordList?.id,
     });
   }
 
@@ -350,21 +339,11 @@ export async function deleteUserWord(
   wordId: string,
   userId: string
 ) {
-  const isShared = await prisma.userWordList.findUnique({
-    where: {
-      id: listId,
-      userId: userId,
-    },
-    include: {
-      sharedWordList: true,
-    },
-  });
-
   const wordList = await getUserWordListInternal(listId, userId);
 
   if (!wordList) return false;
 
-  await deleteUserWordInternal(wordId);
+  await prisma.userWord.delete({ where: { id: wordId } });
 
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
@@ -372,10 +351,10 @@ export async function deleteUserWord(
     userId,
   });
 
-  if (isShared?.sharedWordList) {
+  if (wordList.sharedWordList?.id) {
     revalidateDbCache({
       tag: CACHE_TAGS.sharedWordlists,
-      id: isShared.sharedWordList.id,
+      id: wordList.sharedWordList?.id,
     });
   }
 
@@ -455,16 +434,8 @@ async function getWordlistsByIdInternal(id: string) {
 }
 
 async function getUserWordListInternal(listId: string, userId: string) {
-  return prisma.userWordList.findUnique({
-    where: {
-      id: listId,
-      userId: userId,
-    },
-  });
-}
-
-async function deleteUserWordInternal(wordId: string) {
-  return prisma.userWord.delete({
-    where: { id: wordId },
+  return await prisma.userWordList.findUnique({
+    where: { id: listId, userId },
+    include: { sharedWordList: true },
   });
 }
