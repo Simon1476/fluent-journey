@@ -2,11 +2,13 @@ import {
   CACHE_TAGS,
   dbCache,
   getGlobalTag,
+  getProfileTag,
   getUserTag,
   revalidateDbCache,
 } from "@/lib/cache";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
+import { revalidateTag } from "next/cache";
 
 export async function toggleLike(listId: string, userId: string) {
   const existingLike = await prisma.like.findUnique({
@@ -30,6 +32,7 @@ export async function toggleLike(listId: string, userId: string) {
       userId: userId,
     });
 
+    revalidateTag(getProfileTag(userId, "likes"));
     return {
       error: false,
       message: "좋아요를 취소했습니다.",
@@ -46,6 +49,8 @@ export async function toggleLike(listId: string, userId: string) {
       tag: CACHE_TAGS.likes,
       userId: userId,
     });
+
+    revalidateTag(getProfileTag(userId, "likes"));
 
     return {
       error: false,
