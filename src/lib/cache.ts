@@ -18,7 +18,7 @@ export const CACHE_TAGS = {
     wordlists: "wordlists",
     sharedWordlists: "sharedWordlists",
     bookmarks: "bookmarks",
-    likes: "likes",
+    likes: "profile:likes",
   },
 } as const;
 
