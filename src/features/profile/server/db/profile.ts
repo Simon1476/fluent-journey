@@ -1,4 +1,4 @@
-import { dbCache, getProfileTag } from "@/lib/cache";
+import { dbCache, getProfileTag, getUserTag } from "@/lib/cache";
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
 
@@ -40,6 +40,17 @@ export async function getProfileLikes(accountId: string) {
 
   if (userId == null) return [];
   const cacheFn = dbCache(getProfileLikesInternal, {
+    tags: [getUserTag(userId, "likes")],
+  });
+
+  return cacheFn(userId);
+}
+
+export async function getUserSharedWordListsLikeCount(accountId: string) {
+  const userId = await getUserId(accountId);
+
+  if (userId == null) return [];
+  const cacheFn = dbCache(getUserSharedWordListLikeCountInternal, {
     tags: [getProfileTag(userId, "likes")],
   });
 
@@ -57,6 +68,19 @@ async function getProfileWordListsInternal(userId: string) {
 async function getProfileSharedWordListsInternal(userId: string) {
   const wordlists = await prisma.sharedWordList.findMany({
     where: { userId },
+    select: {
+      name: true,
+      id: true,
+      updatedAt: true,
+      description: true,
+      tags: true,
+      isActive: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+    },
   });
 
   return wordlists;
@@ -94,4 +118,24 @@ async function getProfileLikesInternal(userId: string) {
   });
 
   return likes;
+}
+
+async function getUserSharedWordListLikeCountInternal(userId: string) {
+  const sharedWordlists = await prisma.sharedWordList.findMany({
+    where: { userId },
+    select: {
+      id: true,
+    },
+  });
+
+  // sharedWordlists의 id를 배열로 변환
+  const sharedWordlistIds = sharedWordlists.map((wordlist) => wordlist.id);
+
+  const wordlists = await prisma.like.findMany({
+    where: {
+      listId: { in: sharedWordlistIds }, // sharedWordListId 대신 listId 사용
+    },
+  });
+
+  return wordlists;
 }
