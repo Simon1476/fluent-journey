@@ -132,15 +132,18 @@ export function CommentSection({ sharedList, comments }: Props) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 absolute top-4 right-4"
+                    className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 absolute top-4 right-4 transition-opacity"
                   >
-                    <MoreVertical className="h-4 w-4 text-gray-500" />
+                    <MoreVertical className="h-4 w-4 text-slate-500" />
                   </Button>
                 </DropdownMenuTrigger>
                 {userId === comment.user.id && (
-                  <DropdownMenuContent align="start" className="w-32 bg-white">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-28 border-none bg-white"
+                  >
                     <DropdownMenuItem
-                      className="flex items-center gap-2 cursor-pointer data-[highlighted]:bg-gray-100 transition-colors"
+                      className="flex justify-center items-center gap-4 cursor-pointer data-[highlighted]:bg-slate-100 transition-colors"
                       onClick={() =>
                         handleEditComment({
                           id: comment.id,
@@ -149,14 +152,14 @@ export function CommentSection({ sharedList, comments }: Props) {
                       }
                     >
                       <Edit className="w-4 h-4" />
-                      <span>Edit</span>
+                      <span>수정</span>
                     </DropdownMenuItem>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <div>
+                        <Button className="flex w-full justify-center items-center gap-4 cursor-pointer text-red-500 hover:bg-red-50 transition-colors shadow-none">
                           <Trash2 className="w-4 h-4" />
-                          <span>Delete</span>
-                        </div>
+                          <span>삭제</span>
+                        </Button>
                       </AlertDialogTrigger>
                       <DeleteCommentAlertDialogContent commentId={comment.id} />
                     </AlertDialog>
