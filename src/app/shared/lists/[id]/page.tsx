@@ -163,13 +163,13 @@ export default async function SharedListDetailPage({
             value="words"
             className="text-xs sm:text-sm font-medium py-2 sm:py-3 rounded-lg"
           >
-            Vocabulary List
+            단어 목록
           </TabsTrigger>
           <TabsTrigger
             value="comments"
             className="text-xs sm:text-sm font-medium py-2 sm:py-3 rounded-lg"
           >
-            Discussion
+            댓글 목록
           </TabsTrigger>
         </TabsList>
 
