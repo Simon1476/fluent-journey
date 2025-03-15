@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
 import { toggleBookmark } from "@/features/shared-wordlists/server/actions/bookmark";
 import { toggleLike } from "@/features/shared-wordlists/server/actions/like";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   list: {
@@ -42,7 +43,7 @@ export function SharedWordlistCard({
   isLiked,
   likeCount,
 }: Props) {
-  const handleToggle = async () => {
+  const handleToggleBookmark = async () => {
     const data = await toggleBookmark(list.id);
     if (data) {
       toast({
@@ -53,12 +54,13 @@ export function SharedWordlistCard({
     }
   };
   const handleToggleLike = async () => {
-    const data = await toggleLike(list.id); // 좋아요 토글 처리
+    const data = await toggleLike(list.id);
     if (data) {
       toast({
         title: data.error ? "Error" : "Success",
         description: data.message,
         variant: data.error ? "destructive" : "default",
+        duration: 1500,
       });
     }
   };
@@ -108,12 +110,12 @@ export function SharedWordlistCard({
               <MessageSquare className="w-4 h-4 text-gray-400" />
               {list._count.comments}
             </span>
-            <button
-              className={`flex gap-1 items-center text-gray-400 hover:text-indigo-600 transition-colors ${
+            <Button
+              className={`flex gap-1 items-center text-gray-400 hover:text-indigo-600 transition-colors p-0 shadow-none ${
                 isLiked ? "text-indigo-600" : ""
               }`}
               onClick={handleToggleLike}
-              aria-label="Toggle Like"
+              aria-label={isLiked ? "좋아요 취소" : "좋아요"}
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${
@@ -121,18 +123,18 @@ export function SharedWordlistCard({
                 }`}
               />
               {likeCount ? likeCount : 0}
-            </button>
+            </Button>
 
             <span className="flex items-center gap-1">
               <Eye className="w-4 h-4 text-gray-400" />
               {list.stats ? list.stats.viewCount : 0}
             </span>
-            <button
-              className={`flex items-centertext-gray-400 hover:text-indigo-600 transition-colors ${
+            <Button
+              className={`flex items-centertext-gray-400 hover:text-indigo-600 transition-colors p-0 shadow-none ${
                 isBookmarked ? "text-indigo-600" : ""
               }`}
-              onClick={handleToggle}
-              aria-label="Toggle Bookmark"
+              onClick={handleToggleBookmark}
+              aria-label={isLiked ? "즐겨찾기 취소" : "즐겨찾기"}
             >
               <Bookmark
                 className={`w-5 h-5 transition-colors ${
@@ -141,11 +143,11 @@ export function SharedWordlistCard({
                     : "text-gray-400"
                 }`}
               />
-            </button>
+            </Button>
           </div>
           <span className="flex items-center gap-1 text-xs">
             <User className="w-3 h-3 text-gray-400" />
-            {list.user.name || "Anonymous"}
+            {list.user.name || "익명의 사용자"}
           </span>
         </div>
       </CardContent>
