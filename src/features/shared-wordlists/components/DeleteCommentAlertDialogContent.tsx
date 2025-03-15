@@ -22,7 +22,7 @@ export default function DeleteCommentAlertDialogContent({ commentId }: Props) {
   const { toast } = useToast();
 
   return (
-    <AlertDialogContent className="bg-white border-4 shadow-lg">
+    <AlertDialogContent className="bg-white border-none shadow-lg">
       <AlertDialogHeader>
         <AlertDialogTitle>댓글 삭제</AlertDialogTitle>
         <AlertDialogDescription>
@@ -30,7 +30,7 @@ export default function DeleteCommentAlertDialogContent({ commentId }: Props) {
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel className="bg-gray-100 hover:bg-gray-500 text-red-700 border-0">
+        <AlertDialogCancel className="bg-gray-100 hover:bg-gray-400 text-red-700 border-0">
           취소
         </AlertDialogCancel>
         <AlertDialogAction
