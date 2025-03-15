@@ -32,19 +32,23 @@ import {
 import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
 import { Book, Loader2, Plus } from "lucide-react";
 
+interface WordList {
+  id: string;
+  title: string;
+  description: string | null;
+}
+
+interface Props {
+  wordlist?: WordList;
+  buttonText?: string;
+  title?: string;
+}
+
 export default function WordListModal({
   wordlist,
   buttonText = "새 단어장 만들기",
   title = "새 단어장 만들기",
-}: {
-  wordlist?: {
-    id: string;
-    title: string;
-    description: string | null;
-  };
-  buttonText?: string;
-  title?: string;
-}) {
+}: Props) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const form = useForm<z.infer<typeof wordListCreateSchema>>({
