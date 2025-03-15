@@ -36,26 +36,13 @@ interface Comment {
 
 interface SharedListProps {
   id: string;
-  name: string;
-  description: string | null;
-  createdAt: Date;
-  tags: string[];
   user: {
     id: string;
     name: string | null;
     image: string | null;
   };
   _count: {
-    likes: number;
     comments: number;
-  };
-  original: {
-    words: {
-      id: string;
-      english: string;
-      korean: string;
-      example: string | null;
-    }[];
   };
   comments: {
     id: string;
@@ -181,7 +168,7 @@ export function CommentSection({ sharedList, comments }: Props) {
         ) : (
           <div className="text-center py-8 text-gray-500">
             <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p>No comments yet. Be the first to share your thoughts!</p>
+            <p>아직 댓글이 없습니다. 첫 번째로 의견을 남겨보세요!</p>
           </div>
         )}
       </div>
