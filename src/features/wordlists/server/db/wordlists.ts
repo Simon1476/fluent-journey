@@ -420,7 +420,7 @@ async function getWordlistsInternal(userId: string) {
 }
 
 async function getWordlistsByIdInternal(id: string) {
-  return await prisma.userWordList.findUnique({
+  return await prisma.userWordList.findFirst({
     where: { id },
     include: {
       words: true,

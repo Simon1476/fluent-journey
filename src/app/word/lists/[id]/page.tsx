@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { CreateWordModal } from "@/features/wordlists/components/CreateWordModal";
 import { getWordListById } from "@/features/wordlists/server/db/wordlists";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { WordlistGrid } from "@/features/wordlists/components/WordlistGrid";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
@@ -29,9 +29,7 @@ export default async function WordListPage({ params }: Props) {
 
   const accountId = session.user.id;
   const wordList = await getWordListById(accountId, id);
-  if (!wordList) {
-    return <div>단어장을 찾을 수 없습니다.</div>;
-  }
+  if (wordList == null) notFound();
 
   // 단어 데이터 형식 변환
   const studyWords = wordList.words.map((userWord) => ({
