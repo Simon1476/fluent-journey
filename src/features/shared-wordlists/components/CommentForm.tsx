@@ -3,7 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { createComment, updateComment } from "../server/actions/comments";
+import {
+  createComment,
+  updateComment,
+} from "@/features/shared-wordlists/server/actions/comments";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,7 +17,7 @@ import {
   FormMessage,
   FormField,
 } from "@/components/ui/form";
-import { commentCreateSchema } from "../schemas/comments";
+import { commentCreateSchema } from "@/features/shared-wordlists/schemas/comments";
 
 interface Props {
   listId: string;
