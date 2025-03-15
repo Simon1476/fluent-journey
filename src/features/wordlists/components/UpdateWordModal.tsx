@@ -71,6 +71,7 @@ export function UpdateWordModal({
         title: data.error ? "Error" : "Success",
         description: data.message,
         variant: data.error ? "destructive" : "default",
+        duration: 1500,
       });
     }
 
@@ -89,7 +90,7 @@ export function UpdateWordModal({
         <DialogHeader className="border-b pb-4 mb-4">
           <DialogTitle className="text-2xl font-bold text-blue-800 flex items-center">
             <Plus className="w-6 h-6 mr-2 text-blue-600" />
-            Edit Vocabulary Entry
+            단어 수정하기
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -99,7 +100,7 @@ export function UpdateWordModal({
               name="english"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-blue-700">English Word</FormLabel>
+                  <FormLabel className="text-blue-700">단어</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g., apple"
@@ -116,9 +117,7 @@ export function UpdateWordModal({
               name="korean"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-blue-700">
-                    Korean Meaning
-                  </FormLabel>
+                  <FormLabel className="text-blue-700">뜻</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="e.g., 사과"
@@ -192,9 +191,7 @@ export function UpdateWordModal({
               name="example"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-blue-700">
-                    Example Sentence
-                  </FormLabel>
+                  <FormLabel className="text-blue-700">예문</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="e.g., I enjoy eating fresh apples from the orchard."

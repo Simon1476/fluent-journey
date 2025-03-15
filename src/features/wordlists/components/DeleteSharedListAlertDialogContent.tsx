@@ -37,7 +37,7 @@ export default function DeleteSharedListAlertDialogContent({
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel className="bg-gray-100 hover:bg-gray-500 text-red-700 border-0">
-          Cancel
+          취소
         </AlertDialogCancel>
         <AlertDialogAction
           className="bg-red-700"
@@ -55,7 +55,7 @@ export default function DeleteSharedListAlertDialogContent({
           }}
           disabled={isPending}
         >
-          Delete
+          삭제
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>

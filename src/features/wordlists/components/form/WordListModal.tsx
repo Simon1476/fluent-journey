@@ -74,6 +74,7 @@ export default function WordListModal({
         title: data.error ? "Error" : "Success",
         description: data.message,
         variant: data.error ? "destructive" : "default",
+        duration: 1500,
       });
     }
 

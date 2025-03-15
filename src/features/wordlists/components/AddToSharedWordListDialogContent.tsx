@@ -70,6 +70,7 @@ export default function AddToSharedWordListForm({
         title: data.error ? "Error" : "Success",
         description: data.message,
         variant: data.error ? "destructive" : "default",
+        duration: 1500,
       });
     }
 
@@ -92,8 +93,7 @@ export default function AddToSharedWordListForm({
       <DialogContent className="sm:max-w-[500px] bg-white rounded-xl shadow-2xl border-2 border-blue-100">
         <DialogHeader className="border-b pb-4 mb-4">
           <DialogTitle className="text-2xl font-bold text-blue-800 flex items-center">
-            <Plus className="w-6 h-6 mr-2 text-blue-600" />
-            New Vocabulary Entry
+            <Plus className="w-6 h-6 mr-2 text-blue-600" />새 단어장 공유
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>

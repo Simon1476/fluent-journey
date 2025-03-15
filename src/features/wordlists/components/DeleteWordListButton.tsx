@@ -23,7 +23,7 @@ export function DeleteWordListButton({ listId, listName }: Props) {
   const { toast } = useToast();
 
   return (
-    <AlertDialogContent>
+    <AlertDialogContent className="bg-white border-4 shadow-lg">
       <AlertDialogHeader>
         <AlertDialogTitle>단어장 삭제</AlertDialogTitle>
         <AlertDialogDescription>
@@ -32,8 +32,11 @@ export function DeleteWordListButton({ listId, listName }: Props) {
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>취소</AlertDialogCancel>
+        <AlertDialogCancel className="bg-gray-100 hover:bg-gray-500 text-red-700 border-0">
+          취소
+        </AlertDialogCancel>
         <AlertDialogAction
+          className="bg-red-700"
           onClick={() => {
             startDeleteTransition(async () => {
               const data = await deleteWordList(listId);
