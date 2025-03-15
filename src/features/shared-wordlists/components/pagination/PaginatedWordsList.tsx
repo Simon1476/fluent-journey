@@ -102,8 +102,8 @@ export default function PaginatedWordsList({ words = [], wordLists }: Props) {
                   </div>
                 </CardHeader>
               </div>
-              <CardContent className="py-3 px-6 bg-white border-t text-sm italic text-gray-600">
-                {word.example ? `"${word.example}"` : <span>&nbsp;</span>}
+              <CardContent className="py-3 px-6 bg-white border-t text-sm text-gray-600">
+                {word.example ? `${word.example}` : <span>&nbsp;</span>}
               </CardContent>
             </Card>
           );
