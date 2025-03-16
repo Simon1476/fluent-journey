@@ -32,7 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
-import { createWord } from "../server/actions/wordlists";
+import { createWord } from "@/features/wordlists/server/actions/wordlists";
 
 interface Props {
   listId: string;
@@ -60,7 +60,7 @@ export function CreateWordModal({ listId }: Props) {
         title: data.error ? "Error" : "Success",
         description: data.message,
         variant: data.error ? "destructive" : "default",
-        duration: 1500,
+        duration: data.error ? 3000 : 1500,
       });
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import {
@@ -16,8 +16,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { copyWordToList } from "../server/actions/wordlists";
-import { wordListWordSchema } from "../schemas/wordlists";
+import { copyWordToList } from "@/features/wordlists/server/actions/wordlists";
+import { wordListWordSchema } from "@/features/wordlists/schemas/wordlists";
 import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
 
@@ -43,26 +43,21 @@ export function CopyToWordListButton({
   wordLists,
 }: AddToWordListButtonProps) {
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const handleAddToList = async (
     listId: string,
     data: z.infer<typeof wordListWordSchema>
   ) => {
+    const result = await copyWordToList(listId, data);
+    if (result) {
+      toast({
+        title: result.error ? "Error" : "Success",
+        description: result.message,
+        variant: result.error ? "destructive" : "default",
+        duration: result.error ? 3000 : 1500,
+      });
+    }
     setOpen(false);
-
-    startTransition(async () => {
-      const result = await copyWordToList(listId, data);
-
-      if (result) {
-        toast({
-          title: result.error ? "Error" : "Success",
-          description: result.message,
-          variant: result.error ? "destructive" : "default",
-          duration: 3000,
-        });
-      }
-    });
   };
 
   if (wordLists.length === 0) {
@@ -76,7 +71,6 @@ export function CopyToWordListButton({
             description: "먼저 단어장을 생성해주세요",
           });
         }}
-        disabled={isPending}
         className="rounded-full text-blue-600 border-blue-200 hover:bg-blue-300 hover:border-blue-300 transition-colors"
       >
         <Copy className="h-4 w-4" />
@@ -91,7 +85,6 @@ export function CopyToWordListButton({
           variant="ghost"
           size="icon"
           className="rounded-full text-blue-600 border-blue-200 hover:bg-blue-300 hover:border-blue-300 shadow-sm transition-all"
-          disabled={isPending}
         >
           <Copy className="h-4 w-4" />
           <span className="sr-only">단어장에 추가</span>
@@ -121,7 +114,6 @@ export function CopyToWordListButton({
                   key={list.id}
                   onSelect={() => handleAddToList(list.id, data)}
                   className="cursor-pointer rounded-md data-[selected=true]:bg-blue-100  my-1"
-                  disabled={isPending}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium text-gray-800">
