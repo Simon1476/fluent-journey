@@ -44,30 +44,34 @@ export async function createWordlistWithWords(
   userId: string,
   data: z.infer<typeof wordListCreateSchema>
 ) {
-  const newWordlist = await prisma.userWordList.create({
-    data: {
-      name: data.title,
-      description: data.description,
-      user: { connect: { id: userId } },
-    },
-  });
-
-  if (data.words?.length) {
-    await prisma.userWord.createMany({
-      data: data.words.map((word) => ({
-        wordListId: newWordlist.id,
-        userId: userId,
-        english: word.english,
-        korean: word.korean,
-        example: word.example,
-      })),
+  const newWordlist = await prisma.$transaction(async (prisma) => {
+    const wordlist = await prisma.userWordList.create({
+      data: {
+        name: data.title,
+        description: data.description,
+        user: { connect: { id: userId } },
+      },
     });
-  }
+
+    if (data.words && data.words.length > 0) {
+      await prisma.userWord.createMany({
+        data: data.words.map((word) => ({
+          wordListId: wordlist.id,
+          userId: userId,
+          english: word.english,
+          korean: word.korean,
+          example: word.example,
+        })),
+      });
+    }
+
+    return wordlist;
+  });
 
   revalidateDbCache({
     tag: CACHE_TAGS.wordlists,
     id: newWordlist.id,
-    userId,
+    userId: newWordlist.userId,
   });
 
   return newWordlist;
@@ -98,24 +102,26 @@ export async function updateWordlist(
   { id, userId }: { id: string; userId: string },
   data: z.infer<typeof wordListCreateSchema>
 ) {
-  const updateWordlist = await prisma.userWordList.update({
-    where: { id },
-    data: {
-      name: data.title,
-      description: data.description,
-    },
-  });
+  try {
+    const updateWordlist = await prisma.userWordList.update({
+      where: { id },
+      data: {
+        name: data.title,
+        description: data.description,
+      },
+    });
 
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    id: updateWordlist.id,
-    userId,
-  });
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      id: updateWordlist.id,
+      userId,
+    });
 
-  revalidateDbCache({
-    tag: CACHE_TAGS.sharedWordlists,
-  });
-  return updateWordlist;
+    return updateWordlist;
+  } catch (error) {
+    console.error("Error updating wordlist in DB:", error);
+    return null;
+  }
 }
 
 export async function addToSharedlist(
