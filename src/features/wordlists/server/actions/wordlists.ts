@@ -107,11 +107,11 @@ export async function createWord(
     };
   }
 
-  await createUserWordDb(listId, data, userId);
+  const result = await createUserWordDb(listId, data, userId);
 
   return {
-    error: false,
-    message: "단어장에 단어를 추가했습니다.",
+    error: result.error,
+    message: result.message,
   };
 }
 
@@ -123,22 +123,21 @@ export async function updateWord(
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);
-  const errorMessage = "단어를 수정하지 못했습니다.";
 
   const { success, data } = wordListWordSchema.safeParse(unsafeData);
 
   if (!success || userId == null) {
     return {
       error: true,
-      message: errorMessage,
+      message: "단어를 수정하지 못했습니다.",
     };
   }
 
-  const isSuccess = await updateUserWordDb(listId, wordId, userId, data);
+  const result = await updateUserWordDb(listId, wordId, userId, data);
 
   return {
-    error: !isSuccess,
-    message: isSuccess ? "단어를 수정 했습니다." : errorMessage,
+    error: result.error,
+    message: result.message,
   };
 }
 
@@ -146,17 +145,16 @@ export async function deleteWord(listId: string, wordId: string) {
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);
-  const errorMessage = "단어를 삭제하지 못했습니다.";
 
   if (userId == null) {
-    return { error: true, message: errorMessage };
+    return { error: true, message: "단어를 삭제하지 못했습니다." };
   }
 
-  const isSuccess = await deleteUserWordDb(listId, wordId, userId);
+  const result = await deleteUserWordDb(listId, wordId, userId);
 
   return {
-    error: !isSuccess,
-    message: isSuccess ? "성공적으로 단어를 삭제 했습니다." : errorMessage,
+    error: result.error,
+    message: result.message,
   };
 }
 
@@ -177,11 +175,11 @@ export async function addToSharedlist(
     };
   }
 
-  await addToSharedlistDb(userId, listId, data);
+  const result = await addToSharedlistDb(userId, listId, data);
 
   return {
-    error: false,
-    message: "단어장에 단어를 추가했습니다.",
+    error: result.error,
+    message: result.message,
   };
 }
 
@@ -196,10 +194,10 @@ export async function deleteWordlist(listId: string) {
     return { error: true, message: errorMessage };
   }
 
-  const isSuccess = await deleteWordlistDb(listId, userId);
+  const result = await deleteWordlistDb(listId, userId);
 
   return {
-    error: !isSuccess,
-    message: isSuccess ? "성공적으로 단어장을 삭제 했습니다." : errorMessage,
+    error: result.error,
+    message: result.message,
   };
 }

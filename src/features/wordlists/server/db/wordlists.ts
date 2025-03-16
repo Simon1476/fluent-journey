@@ -135,97 +135,107 @@ export async function addToSharedlist(
   listId: string,
   data: z.infer<typeof addToSharedWordListSchema>
 ) {
-  const [updatedWordList, newSharedWordlist] = await prisma.$transaction([
-    prisma.userWordList.update({
-      where: { id: listId },
-      data: { isPublic: true },
-    }),
+  try {
+    const [updatedWordList, newSharedWordlist] = await prisma.$transaction([
+      prisma.userWordList.update({
+        where: { id: listId },
+        data: { isPublic: true },
+      }),
 
-    prisma.sharedWordList.upsert({
-      where: { originalId: listId },
-      update: {
-        isActive: true,
-      },
+      prisma.sharedWordList.upsert({
+        where: { originalId: listId },
+        update: {
+          isActive: true,
+        },
+        create: {
+          name: data.name,
+          description: data.description,
+          tags: data.tags || [],
+          userId,
+          originalId: listId,
+        },
+      }),
+    ]);
+
+    await prisma.sharedWordListStats.upsert({
+      where: { listId: newSharedWordlist.id },
+      update: {}, // 기존 데이터 유지
       create: {
-        name: data.name,
-        description: data.description,
-        tags: data.tags || [],
-        userId,
-        originalId: listId,
+        listId: newSharedWordlist.id,
+        viewCount: 0,
       },
-    }),
+    });
 
-    // 조회수 테이블 (SharedWordListStats) 생성
-  ]);
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      id: updatedWordList.id,
+      userId,
+    });
 
-  await prisma.sharedWordListStats.upsert({
-    where: { listId: newSharedWordlist.id }, // 수정된 부분: newSharedWordlist.id 사용
-    update: {}, // 기존 데이터 유지
-    create: {
-      listId: newSharedWordlist.id, // 수정된 부분: newSharedWordlist.id 사용
-      viewCount: 0,
-    },
-  });
+    revalidateDbCache({
+      tag: CACHE_TAGS.sharedWordlists,
+      id: newSharedWordlist.id,
+      userId,
+    });
 
-  // 캐시 무효화
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    id: updatedWordList.id,
-    userId,
-  });
-
-  revalidateDbCache({
-    tag: CACHE_TAGS.sharedWordlists,
-    id: newSharedWordlist.id,
-    userId,
-  });
-
-  return {
-    error: false,
-    message: "단어장이 성공적으로 공유되었습니다.",
-  };
+    return {
+      error: true,
+      message: "단어장이 성공적으로 공유되었습니다.",
+    };
+  } catch (error) {
+    console.error("Failed to add to shared list:", error);
+    return {
+      error: false,
+      message: "단어장 공유 중 오류가 발생했습니다.",
+    };
+  }
 }
 
 export async function deleteWordlist(listId: string, userId: string) {
-  const wordList = await prisma.userWordList.findUnique({
-    where: { id: listId, userId },
-    include: { sharedWordList: true },
-  });
+  try {
+    const wordList = await getUserWordListInternal(listId, userId);
 
-  if (!wordList) {
-    return false;
-  }
-
-  const isSuccess = await prisma.$transaction(async (tx) => {
-    // 공유된 단어장이 있는 경우에만 관련 테이블 삭제
-    if (wordList.sharedWordList) {
-      // 2-1. SharedWordListStats 삭제
-      await tx.sharedWordListStats.deleteMany({
-        where: { listId: wordList.sharedWordList.id },
-      });
-
-      // 2-2. SharedWordList 삭제
-      await tx.sharedWordList.delete({
-        where: { id: wordList.sharedWordList.id },
-      });
+    if (!wordList) {
+      return {
+        success: false,
+        message: "단어장이 존재하지 않습니다.",
+      };
     }
 
-    // 2-3. UserWordList 삭제 (항상 실행)
-    await tx.userWordList.delete({
-      where: { id: listId, userId },
+    await prisma.$transaction(async (tx) => {
+      // 공유된 단어장이 있는 경우 관련 데이터 삭제
+      if (wordList.sharedWordList) {
+        await tx.sharedWordListStats.deleteMany({
+          where: { listId: wordList.sharedWordList.id },
+        });
+
+        await tx.sharedWordList.delete({
+          where: { id: wordList.sharedWordList.id },
+        });
+      }
+
+      // 사용자 단어장 삭제
+      await tx.userWordList.delete({
+        where: { id: listId, userId },
+      });
     });
 
-    return true;
-  });
+    revalidateDbCache({ tag: CACHE_TAGS.wordlists, id: listId, userId });
+    if (wordList.sharedWordList) {
+      revalidateDbCache({ tag: CACHE_TAGS.sharedWordlists });
+    }
 
-  if (!isSuccess) return false;
-
-  revalidateDbCache({ tag: CACHE_TAGS.wordlists, id: listId, userId });
-  if (wordList.sharedWordList) {
-    revalidateDbCache({ tag: CACHE_TAGS.sharedWordlists });
+    return {
+      error: true,
+      message: "단어장이 삭제되었습니다.",
+    };
+  } catch (error) {
+    console.error("Failed to delete wordlist:", error);
+    return {
+      error: false,
+      message: "단어장 삭제 중 오류가 발생했습니다.",
+    };
   }
-
-  return true;
 }
 
 export async function copyWordToList(
@@ -276,47 +286,54 @@ export async function createUserWord(
   data: z.infer<typeof wordListWordSchema>,
   userId: string
 ) {
-  // 먼저 해당 단어장의 공유 상태 확인
-  const wordList = await prisma.userWordList.findUnique({
-    where: { id: listId },
-    include: {
-      sharedWordList: true,
-    },
-  });
+  try {
+    // 먼저 해당 단어장의 공유 상태 확인
+    const wordList = await getUserWordListInternal(listId, userId);
 
-  const result = await prisma.userWord.create({
-    data: {
-      english: data.english,
-      korean: data.korean,
-      level: data.level,
-      pronunciation: data.pronunciation,
-      example: data.example,
-      wordList: { connect: { id: listId } },
-      user: { connect: { id: userId } },
-    },
-  });
+    if (!wordList)
+      return {
+        error: false,
+        message: "단어장이 존재 하지 않습니다.",
+      };
 
-  revalidateDbCache({
-    tag: CACHE_TAGS.userWords,
-    id: userId,
-  });
-
-  // 원본 단어장 캐시 무효화
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    userId: userId,
-    id: listId,
-  });
-
-  // 공유 단어장이 있다면 해당 캐시도 무효화
-  if (wordList?.sharedWordList) {
-    revalidateDbCache({
-      tag: CACHE_TAGS.sharedWordlists,
-      id: wordList.sharedWordList.id,
+    await prisma.userWord.create({
+      data: {
+        english: data.english,
+        korean: data.korean,
+        level: data.level,
+        pronunciation: data.pronunciation,
+        example: data.example,
+        wordList: { connect: { id: listId } },
+        user: { connect: { id: userId } },
+      },
     });
-  }
 
-  return result;
+    // 원본 단어장 캐시 무효화
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      userId: userId,
+      id: listId,
+    });
+
+    // 공유 단어장이 있다면 해당 캐시도 무효화
+    if (wordList.sharedWordList) {
+      revalidateDbCache({
+        tag: CACHE_TAGS.sharedWordlists,
+        id: wordList.sharedWordList.id,
+      });
+    }
+
+    return {
+      error: true,
+      message: "단어가 추가되었습니다.",
+    };
+  } catch (error) {
+    console.error("Failed to create user word:", error);
+    return {
+      error: false,
+      message: "단어 추가 중 오류가 발생했습니다.",
+    };
+  }
 }
 
 export async function updateUserWord(
@@ -325,29 +342,43 @@ export async function updateUserWord(
   userId: string,
   data: z.infer<typeof wordListWordSchema>
 ) {
-  const wordList = await getUserWordListInternal(listId, userId);
+  try {
+    const wordList = await getUserWordListInternal(listId, userId);
 
-  if (!wordList) return false;
+    if (!wordList)
+      return {
+        error: false,
+        message: "단어장이 존재 하지 않습니다.",
+      };
 
-  await prisma.userWord.update({
-    where: { id: wordId },
-    data,
-  });
-
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    id: listId,
-    userId,
-  });
-
-  if (wordList.sharedWordList?.id) {
-    revalidateDbCache({
-      tag: CACHE_TAGS.sharedWordlists,
-      id: wordList.sharedWordList?.id,
+    await prisma.userWord.update({
+      where: { id: wordId },
+      data,
     });
-  }
 
-  return true;
+    revalidateDbCache({
+      tag: CACHE_TAGS.wordlists,
+      userId,
+      id: listId,
+    });
+
+    if (wordList.sharedWordList?.id) {
+      revalidateDbCache({
+        tag: CACHE_TAGS.sharedWordlists,
+        id: wordList.sharedWordList.id,
+      });
+    }
+    return {
+      error: false,
+      message: "단어를 수정했습니다.",
+    };
+  } catch (error) {
+    console.error("Failed to update user word:", error);
+    return {
+      error: true,
+      message: "오류가 발생했습니다.",
+    };
+  }
 }
 
 export async function deleteUserWord(
@@ -355,26 +386,42 @@ export async function deleteUserWord(
   wordId: string,
   userId: string
 ) {
-  const wordList = await getUserWordListInternal(listId, userId);
+  try {
+    const wordList = await getUserWordListInternal(listId, userId);
 
-  if (!wordList) return false;
+    if (!wordList) {
+      return {
+        success: false,
+        message: "단어장이 존재하지 않습니다.",
+      };
+    }
 
-  await prisma.userWord.delete({ where: { id: wordId } });
+    await prisma.userWord.delete({ where: { id: wordId } });
 
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    id: listId,
-    userId,
-  });
-
-  if (wordList.sharedWordList?.id) {
     revalidateDbCache({
-      tag: CACHE_TAGS.sharedWordlists,
-      id: wordList.sharedWordList?.id,
+      tag: CACHE_TAGS.wordlists,
+      id: listId,
+      userId,
     });
-  }
 
-  return true;
+    if (wordList.sharedWordList?.id) {
+      revalidateDbCache({
+        tag: CACHE_TAGS.sharedWordlists,
+        id: wordList.sharedWordList.id,
+      });
+    }
+
+    return {
+      error: true,
+      message: "단어가 삭제되었습니다.",
+    };
+  } catch (error) {
+    console.error("Failed to delete user word:", error);
+    return {
+      error: false,
+      message: "단어 삭제 중 오류가 발생했습니다.",
+    };
+  }
 }
 
 async function getWordlistsInternal(userId: string) {
@@ -410,7 +457,7 @@ async function getWordlistsByIdInternal(id: string) {
 }
 
 async function getUserWordListInternal(listId: string, userId: string) {
-  return await prisma.userWordList.findUnique({
+  return await prisma.userWordList.findFirst({
     where: { id: listId, userId },
     include: { sharedWordList: true },
   });
