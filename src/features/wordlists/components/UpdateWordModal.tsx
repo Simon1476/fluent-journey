@@ -64,13 +64,13 @@ export function UpdateWordModal({
   });
 
   async function onSubmit(values: z.infer<typeof wordListWordSchema>) {
-    const data = await updateWord(listId, id, values);
+    const result = await updateWord(listId, id, values);
 
-    if (data) {
+    if (result) {
       toast({
-        title: data.error ? "Error" : "Success",
-        description: data.message,
-        variant: data.error ? "destructive" : "default",
+        title: result.error ? "Error" : "Success",
+        description: result.message,
+        variant: result.error ? "destructive" : "default",
         duration: 1500,
       });
     }
