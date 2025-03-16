@@ -228,7 +228,7 @@ export async function copyWordToList(
   userId: string
 ) {
   try {
-    const result = await prisma.userWord.create({
+    await prisma.userWord.create({
       data: {
         english: data.english,
         korean: data.korean,
@@ -252,11 +252,16 @@ export async function copyWordToList(
       id: listId,
     });
 
-    return result;
+    return {
+      error: false,
+      message: "단어장에 단어를 복사했습니다",
+    };
   } catch (error) {
     console.error("Error copying word to list:", error);
-    const errorMessage = "단어를 단어장에 복사하는 데 실패했습니다.";
-    return { error: true, message: errorMessage };
+    return {
+      error: true,
+      message: "오류가 발생했습니다. 다시 시도해 주세요.",
+    };
   }
 }
 

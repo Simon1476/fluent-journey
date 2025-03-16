@@ -83,11 +83,11 @@ export async function copyWordToList(
     };
   }
 
-  await copyWordToListDb(listId, data, userId);
+  const result = await copyWordToListDb(listId, data, userId);
 
   return {
-    error: false,
-    message: "단어장에 단어를 복사했습니다.",
+    error: result.error,
+    message: result.message,
   };
 }
 
