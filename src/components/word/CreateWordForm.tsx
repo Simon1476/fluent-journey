@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
-import { createWordList } from "@/features/wordlists/server/actions/wordlists";
+import { createWordlist } from "@/features/wordlists/server/actions/wordlists";
 
 export default function CreateVocabularyListForm() {
   const form = useForm<z.infer<typeof wordListCreateSchema>>({
@@ -49,7 +49,7 @@ export default function CreateVocabularyListForm() {
       words: filteredWords,
     };
 
-    const data = await createWordList(dataToSubmit);
+    const data = await createWordlist(dataToSubmit);
 
     if (data) {
       toast({

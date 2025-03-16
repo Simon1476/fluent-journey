@@ -256,7 +256,6 @@ export async function copyWordToList(
   } catch (error) {
     console.error("Error copying word to list:", error);
     const errorMessage = "단어를 단어장에 복사하는 데 실패했습니다.";
-
     return { error: true, message: errorMessage };
   }
 }
@@ -361,46 +360,6 @@ export async function deleteUserWord(
     revalidateDbCache({
       tag: CACHE_TAGS.sharedWordlists,
       id: wordList.sharedWordList?.id,
-    });
-  }
-
-  return true;
-}
-
-export async function updateWordList(
-  listId: string,
-  userId: string,
-  data: { name?: string; description?: string }
-) {
-  const wordList = await prisma.userWordList.findUnique({
-    where: {
-      id: listId,
-      userId,
-    },
-    include: {
-      sharedWordList: true,
-    },
-  });
-
-  if (!wordList) return false;
-
-  await prisma.userWordList.update({
-    where: { id: listId },
-    data,
-  });
-
-  // 원본 단어장 캐시 무효화
-  revalidateDbCache({
-    tag: CACHE_TAGS.wordlists,
-    id: listId,
-    userId,
-  });
-
-  // 공유 단어장이 있다면 해당 캐시도 무효화
-  if (wordList.sharedWordList) {
-    revalidateDbCache({
-      tag: CACHE_TAGS.sharedWordlists,
-      id: wordList.sharedWordList.id,
     });
   }
 

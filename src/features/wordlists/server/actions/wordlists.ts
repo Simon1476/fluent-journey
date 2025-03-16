@@ -20,7 +20,7 @@ import {
   createWordlistWithWords as createWordlistWithWordsDb,
 } from "@/features/wordlists/server/db/wordlists";
 
-export async function createWordList(
+export async function createWordlist(
   unsafeData: z.infer<typeof wordListCreateSchema>
 ) {
   const session = await auth();
@@ -41,7 +41,7 @@ export async function createWordList(
   redirect(`/word/lists/${id}`);
 }
 
-export async function updateWordList(
+export async function updateWordlist(
   id: string,
   unsafeData: z.infer<typeof wordListCreateSchema>
 ) {
@@ -186,7 +186,7 @@ export async function addToSharedlist(
   };
 }
 
-export async function deleteWordList(listId: string) {
+export async function deleteWordlist(listId: string) {
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);

@@ -26,8 +26,8 @@ import {
 } from "@/components/ui/dialog";
 
 import {
-  createWordList,
-  updateWordList,
+  createWordlist,
+  updateWordlist,
 } from "@/features/wordlists/server/actions/wordlists";
 import { wordListCreateSchema } from "@/features/wordlists/schemas/wordlists";
 import { Book, Loader2, Plus } from "lucide-react";
@@ -66,8 +66,8 @@ export default function WordListModal({
 
   async function onSubmit(values: z.infer<typeof wordListCreateSchema>) {
     const action = wordlist
-      ? updateWordList.bind(null, wordlist.id)
-      : createWordList;
+      ? updateWordlist.bind(null, wordlist.id)
+      : createWordlist;
     const data = await action(values);
     if (data.message) {
       toast({

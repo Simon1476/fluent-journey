@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
-import { deleteWordList } from "../server/actions/wordlists";
+import { deleteWordlist } from "@/features/wordlists/server/actions/wordlists";
 
 interface Props {
   listId: string;
@@ -39,7 +39,7 @@ export function DeleteWordListButton({ listId, listName }: Props) {
           className="bg-red-700"
           onClick={() => {
             startDeleteTransition(async () => {
-              const data = await deleteWordList(listId);
+              const data = await deleteWordlist(listId);
               if (data.message) {
                 toast({
                   title: data.error ? "Error" : "Success",
