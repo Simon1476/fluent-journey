@@ -48,21 +48,20 @@ export async function updateWordlist(
   const session = await auth();
   const accountId = session?.user.id;
   const userId = await getUserId(accountId);
-  const errorMessage = "단어장을 수정하는 동안 오류가 발생했습니다";
   const { success, data } = wordListCreateSchema.safeParse(unsafeData);
 
   if (!success || userId == null) {
     return {
       error: true,
-      message: errorMessage,
+      message: "단어장을 수정하는 동안 오류가 발생했습니다",
     };
   }
 
-  const isSuccess = await updateWordlistDb({ id, userId }, data);
+  const result = await updateWordlistDb({ id, userId }, data);
 
   return {
-    error: !isSuccess,
-    message: isSuccess ? "단어장을 업데이트 했습니다." : errorMessage,
+    error: result.error,
+    message: result.message,
   };
 }
 

@@ -117,10 +117,16 @@ export async function updateWordlist(
       userId,
     });
 
-    return updateWordlist;
+    return {
+      error: false,
+      message: "단어장을 수정했습니다.",
+    };
   } catch (error) {
     console.error("Error updating wordlist in DB:", error);
-    return null;
+    return {
+      error: true,
+      message: "오류가 발생했습니다. 다시 시도해 주세요.",
+    };
   }
 }
 
