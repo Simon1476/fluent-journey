@@ -17,6 +17,7 @@ import { useUserId } from "@/hooks/use-userId";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import DeleteCommentAlertDialogContent from "./DeleteCommentAlertDialogContent";
 import CustomPagination from "@/components/CustomPagination";
+import { differenceInSeconds } from "date-fns";
 
 interface User {
   id: string;
@@ -30,40 +31,17 @@ interface Comment {
   content: string;
   createdAt: Date;
   updatedAt: Date;
-  userId: string;
   user: User;
 }
 
-interface SharedListProps {
-  id: string;
-  user: {
-    id: string;
-    name: string | null;
-    image: string | null;
-  };
-  _count: {
-    comments: number;
-  };
-  comments: {
-    id: string;
-    content: string;
-    createdAt: Date;
-    user: {
-      id: string;
-      name: string | null;
-      image: string | null;
-    };
-  }[];
-}
-
 interface Props {
-  sharedList: SharedListProps;
   comments: Comment[];
+  listId: string;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-export function CommentSection({ sharedList, comments }: Props) {
+export function CommentSection({ comments, listId }: Props) {
   const userId = useUserId();
   const [editComment, setEditComment] = useState<{
     id: string;
@@ -93,7 +71,7 @@ export function CommentSection({ sharedList, comments }: Props) {
 
   return (
     <TabsContent value="comments" className="p-6 min-h-[600px]">
-      <CommentForm listId={sharedList.id} editComment={null} />
+      <CommentForm listId={listId} editComment={null} />
       <div className="space-y-4 mt-6">
         {visibleComments.length > 0 ? (
           visibleComments.map((comment) => (
@@ -111,13 +89,19 @@ export function CommentSection({ sharedList, comments }: Props) {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium">{comment.user.name}</span>
                   <span className="text-xs text-gray-500">
-                    {formatDate(comment.createdAt)}
+                    {formatDate(comment.updatedAt)}
+                    {comment.createdAt !== comment.updatedAt &&
+                      differenceInSeconds(
+                        new Date(comment.updatedAt),
+                        new Date(comment.createdAt)
+                      ) > 0 &&
+                      " (수정됨)"}
                   </span>
                 </div>
                 {userId === comment.user.id &&
                 editComment?.id === comment.id ? (
                   <CommentForm
-                    listId={sharedList.id}
+                    listId={listId}
                     editComment={editComment}
                     onCancelEdit={() => setEditComment(null)}
                     onUpdateComment={handleUpdateComment}

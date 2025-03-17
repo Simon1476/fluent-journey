@@ -46,16 +46,16 @@ export function CommentForm({
     const action = editComment
       ? updateComment.bind(null, editComment.id)
       : createComment.bind(null, listId);
-    const data = await action(values);
+    const result = await action(values);
 
-    if (data) {
+    if (result) {
       toast({
-        title: data.error ? "Error" : "Success",
-        description: data.message,
-        variant: data.error ? "destructive" : "default",
+        title: result.error ? "Error" : "Success",
+        description: result.message,
+        variant: result.error ? "destructive" : "default",
       });
 
-      if (!data.error && editComment) {
+      if (!result.error && editComment) {
         onUpdateComment?.();
       }
     }
