@@ -25,7 +25,7 @@ export function NoSharedWordlists() {
               <Share2 className="h-4 w-4" />내 단어장 공유하기
             </Button>
           </Link>
-          <Link href="/word/lists/create">
+          <Link href="/create-set">
             <Button className="gap-2">
               <Plus className="h-4 w-4" />새 단어장 만들기
             </Button>
