@@ -20,16 +20,9 @@ interface Props {
     } | null;
     _count: {
       comments: number;
-      likes: number;
     };
     user: {
-      id: string;
-      image: string | null;
       name: string | null;
-      email: string | null;
-      emailVerified: Date | null;
-      createdAt: Date;
-      updatedAt: Date;
     };
   };
   isBookmarked: boolean;
