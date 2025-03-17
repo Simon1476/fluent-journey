@@ -34,15 +34,15 @@ export default function DeleteCommentAlertDialogContent({ commentId }: Props) {
           취소
         </AlertDialogCancel>
         <AlertDialogAction
-          className="bg-red-700"
+          className="bg-red-500 hover:bg-red-700"
           onClick={() => {
             startTransition(async () => {
-              const data = await deleteComment(commentId);
-              if (data.message) {
+              const reusult = await deleteComment(commentId);
+              if (reusult.message) {
                 toast({
-                  title: data.error ? "Error" : "Success",
-                  description: data.message,
-                  variant: data.error ? "destructive" : "default",
+                  title: reusult.error ? "Error" : "Success",
+                  description: reusult.message,
+                  variant: reusult.error ? "destructive" : "default",
                 });
               }
             });
