@@ -179,13 +179,13 @@ export async function addToSharedlist(
     });
 
     return {
-      error: true,
+      error: false,
       message: "단어장이 성공적으로 공유되었습니다.",
     };
   } catch (error) {
     console.error("Failed to add to shared list:", error);
     return {
-      error: false,
+      error: true,
       message: "단어장 공유 중 오류가 발생했습니다.",
     };
   }
