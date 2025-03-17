@@ -44,12 +44,12 @@ export function SharedWordlistCard({
   likeCount,
 }: Props) {
   const handleToggleBookmark = async () => {
-    const data = await toggleBookmark(list.id);
-    if (data) {
+    const result = await toggleBookmark(list.id);
+    if (result) {
       toast({
-        title: data.error ? "Error" : "Success",
-        description: data.message,
-        variant: data.error ? "destructive" : "default",
+        title: result.error ? "Error" : "Success",
+        description: result.message,
+        variant: result.error ? "destructive" : "default",
       });
     }
   };

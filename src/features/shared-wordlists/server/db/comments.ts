@@ -128,7 +128,7 @@ export async function deleteComment({
     });
 
     return {
-      success: true,
+      error: false,
       message: "댓글이 삭제되었습니다.",
     };
   } catch (error) {
@@ -143,7 +143,7 @@ export async function deleteComment({
     }
 
     return {
-      success: false,
+      error: true,
       message: errorMessage,
     };
   }

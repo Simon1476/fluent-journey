@@ -71,7 +71,7 @@ export async function deleteComment(commentId: string) {
   const result = await deleteCommentDb({ commentId, userId });
 
   return {
-    error: !result.success,
-    message: result.success ? "댓글을 삭제했습니다." : result.message,
+    error: result.error,
+    message: result.message,
   };
 }

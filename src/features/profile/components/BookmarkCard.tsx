@@ -29,13 +29,13 @@ interface Bookmark {
 
 export function BookmarkCard({ createdAt, sharedList }: Bookmark) {
   const handleCancelBookmark = async () => {
-    const data = await toggleBookmark(sharedList.id);
+    const result = await toggleBookmark(sharedList.id);
 
-    if (data) {
+    if (result) {
       toast({
-        title: data.error ? "Error" : "Success",
-        description: data.message,
-        variant: data.error ? "destructive" : "default",
+        title: result.error ? "Error" : "Success",
+        description: result.message,
+        variant: result.error ? "destructive" : "default",
         duration: 1500,
       });
     }
