@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "@/lib/utils";
-// import { z } from "zod";
 import {
   CACHE_TAGS,
   dbCache,
@@ -10,7 +9,6 @@ import {
   getIdTag,
   getUserTag,
   revalidateDbCache,
-  // revalidateDbCache,
 } from "@/lib/cache";
 
 export async function getSharedWordLists(
@@ -32,8 +30,8 @@ export async function getSharedWordLists(
   return cacheFn(q, tags);
 }
 
-export async function getSharedWordListById(id: string) {
-  const cacheFn = dbCache(getSharedWordListByIdInternal, {
+export async function getSharedWordlistById(id: string) {
+  const cacheFn = dbCache(getSharedWordlistByIdInternal, {
     tags: [getIdTag(id, CACHE_TAGS.sharedWordlists)],
   });
 
@@ -61,7 +59,7 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
     ],
   };
 
-  return await prisma.sharedWordList.findMany({
+  const sharedWordlists = await prisma.sharedWordList.findMany({
     where,
     include: {
       user: true,
@@ -80,28 +78,37 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
       createdAt: "desc",
     },
   });
+
+  return sharedWordlists;
 }
 
-async function getSharedWordListByIdInternal(id: string) {
-  const sharedWordlist = await prisma.sharedWordList.findUnique({
+export async function getSharedWordlistByIdInternal(id: string) {
+  return prisma.sharedWordList.findFirst({
     where: { id },
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-      original: { include: { words: true } },
-      comments: {
-        include: {
-          user: { select: { id: true, name: true, image: true } },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      tags: true,
+      user: {
+        select: {
+          name: true,
+          image: true,
         },
-        orderBy: { createdAt: "desc" },
       },
-      likes: true,
-      _count: { select: { comments: true, likes: true } },
+      createdAt: true,
+      original: {
+        select: {
+          words: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
     },
   });
-
-  if (!sharedWordlist) return null;
-
-  return sharedWordlist;
 }
 
 export async function cancelSharedWordlist(
