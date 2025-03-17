@@ -6,7 +6,7 @@ import {
   createComment as createCommentDb,
   updateComment as updateCommentDb,
   deleteComment as deleteCommentDb,
-} from "../db/comments";
+} from "@/features/shared-wordlists/server/db/comments";
 import { z } from "zod";
 import { commentCreateSchema } from "@/features/shared-wordlists/schemas/comments";
 
@@ -27,11 +27,11 @@ export async function createComment(
     };
   }
 
-  await createCommentDb(listId, userId, data);
+  const result = await createCommentDb(listId, userId, data);
 
   return {
-    error: false,
-    message: "댓글을 작성했습니다.",
+    error: result.error,
+    message: result.message,
   };
 }
 
