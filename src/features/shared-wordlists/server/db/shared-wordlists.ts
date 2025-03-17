@@ -40,6 +40,7 @@ export async function getSharedWordlistById(id: string) {
 
 async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
   const where = {
+    isActive: true,
     AND: [
       search
         ? {
@@ -61,16 +62,25 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
 
   const sharedWordlists = await prisma.sharedWordList.findMany({
     where,
-    include: {
-      user: true,
-      original: true,
-      comments: true,
-      likes: true,
-      stats: true,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      tags: true,
+      isActive: true,
+      stats: {
+        select: {
+          viewCount: true,
+        },
+      },
       _count: {
         select: {
           comments: true,
-          likes: true,
+        },
+      },
+      user: {
+        select: {
+          name: true,
         },
       },
     },
