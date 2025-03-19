@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getSharedWordListById } from "@/features/shared-wordlists/server/db/shared-wordlists";
+import { getSharedWordlistById } from "@/features/shared-wordlists/server/db/shared-wordlists";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
 import { CommentSection } from "@/features/shared-wordlists/components/CommentSection";
-import { getCommentsByWordListId } from "@/features/shared-wordlists/server/db/comments";
+import { getCommentsByWordlistId } from "@/features/shared-wordlists/server/db/comments";
 import PaginatedWordsList from "@/features/shared-wordlists/components/pagination/PaginatedWordsList";
 
 import {
@@ -35,9 +35,11 @@ export default async function SharedListDetailPage({
   const { id } = await params;
 
   const accountId = session.user.id;
-  const sharedList = await getSharedWordListById(id);
-  const comments = await getCommentsByWordListId(id);
-  const wordLists = await getWordLists(accountId);
+  const [sharedList, comments, wordLists] = await Promise.all([
+    getSharedWordlistById(id),
+    getCommentsByWordlistId(id),
+    getWordLists(accountId),
+  ]);
 
   if (!sharedList) {
     redirect("/shared/lists");
@@ -104,7 +106,7 @@ export default async function SharedListDetailPage({
                   <div className="flex flex-col items-center">
                     <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mb-1" />
                     <span className="font-bold text-base sm:text-lg">
-                      {sharedList._count.comments}
+                      {comments.length}
                     </span>
                     <span className="text-xs opacity-80">Comments</span>
                   </div>
@@ -180,7 +182,7 @@ export default async function SharedListDetailPage({
           />
         </TabsContent>
 
-        <CommentSection sharedList={sharedList} comments={comments} />
+        <CommentSection comments={comments} listId={sharedList.id} />
       </Tabs>
     </div>
   );
