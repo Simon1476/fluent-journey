@@ -11,8 +11,28 @@ import {
   revalidateDbCache,
 } from "@/lib/cache";
 
+export async function getSharedWordlistsPages(q?: string, tags?: string[]) {
+  const where = {
+    isActive: true,
+    AND: [
+      q
+        ? {
+            OR: [
+              { name: { contains: q, mode: "insensitive" as const } },
+              { description: { contains: q, mode: "insensitive" as const } },
+            ],
+          }
+        : {},
+      tags && tags.length > 0 ? { tags: { hasSome: tags } } : {},
+    ],
+  };
+
+  return prisma.sharedWordList.count({ where });
+}
+
 export async function getSharedWordLists(
   accountId: string,
+  currentPage: number,
   q?: string,
   tags?: string[]
 ) {
@@ -27,7 +47,7 @@ export async function getSharedWordLists(
     ],
   });
 
-  return cacheFn(q, tags);
+  return cacheFn(currentPage, q, tags);
 }
 
 export async function getSharedWordlistById(id: string) {
@@ -38,7 +58,11 @@ export async function getSharedWordlistById(id: string) {
   return cacheFn(id);
 }
 
-async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
+async function getSharedWordlistsInternal(
+  currentPage: number,
+  search?: string,
+  tags?: string[]
+) {
   const where = {
     isActive: true,
     AND: [
@@ -87,6 +111,8 @@ async function getSharedWordlistsInternal(search?: string, tags?: string[]) {
     orderBy: {
       createdAt: "desc",
     },
+    skip: (currentPage - 1) * 12,
+    take: 12,
   });
 
   return sharedWordlists;
