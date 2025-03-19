@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { PaginationWithLinks } from "@/components/pagination-with-links";
 import { getProfileLikes } from "@/features/profile/server/db/profile";
 import { SharedWordlistsGrid } from "@/features/shared-wordlists/components/SharedWordlistsGrid";
 import { BookmarkFilter } from "@/features/shared-wordlists/components/filters/BookmarkFilter";
@@ -6,28 +7,41 @@ import { SearchBar } from "@/features/shared-wordlists/components/filters/Search
 import { TagFilter } from "@/features/shared-wordlists/components/filters/TagFilter";
 import { getBookmarks } from "@/features/shared-wordlists/server/db/bookmark";
 import { getLikes } from "@/features/shared-wordlists/server/db/like";
-import { getSharedWordLists } from "@/features/shared-wordlists/server/db/shared-wordlists";
+import {
+  getSharedWordLists,
+  getSharedWordlistsPages,
+} from "@/features/shared-wordlists/server/db/shared-wordlists";
 import { redirect } from "next/navigation";
+
+const pageSize = 12; // 한 페이지당 표시할 개수
 
 export default async function SharedWordListsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; tags?: string; bookmarksOnly?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    tags?: string;
+    bookmarksOnly?: string;
+    page: string;
+  }>;
 }) {
   const session = await auth();
   if (!session) {
     redirect("/signin");
   }
 
-  const { q, tags, bookmarksOnly } = await searchParams;
-
+  const { q, tags, bookmarksOnly, page } = await searchParams;
   const selectedTags = tags ? tags.split(",") : [];
   const accountId = session.user.id;
+  const currentPage = Number(page) || 1;
 
-  const lists = await getSharedWordLists(accountId, q, selectedTags);
-  const bookmarks = await getBookmarks(accountId);
-  const likes = await getLikes(accountId);
-  const userLikes = await getProfileLikes(accountId);
+  const [totalItems, lists, bookmarks, likes, userLikes] = await Promise.all([
+    getSharedWordlistsPages(q, selectedTags),
+    getSharedWordLists(accountId, currentPage, q, selectedTags),
+    getBookmarks(accountId),
+    getLikes(accountId),
+    getProfileLikes(accountId),
+  ]);
 
   const filteredLists =
     bookmarksOnly === "true"
@@ -64,6 +78,12 @@ export default async function SharedWordListsPage({
           </div>
         )}
       </div>
+
+      <PaginationWithLinks
+        pageSize={pageSize}
+        totalCount={totalItems}
+        page={currentPage}
+      />
     </div>
   );
 }
