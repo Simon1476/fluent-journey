@@ -81,6 +81,7 @@ export default function CustomPagination({
             return (
               <PaginationItem key={`page-${index}`}>
                 <PaginationLink
+                  href="#"
                   isActive={currentPage === page}
                   onClick={() => onPageChange(page as number)}
                   className={`transition-all cursor-pointer ${
