@@ -7,7 +7,7 @@ import { useTransition } from "react";
 export function BookmarkFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const bookmarksOnly = searchParams.get("bookmarksOnly") === "true";
 

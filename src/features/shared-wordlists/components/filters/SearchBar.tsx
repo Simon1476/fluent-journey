@@ -9,7 +9,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 export function SearchBar({ placeholder }: { placeholder?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [_, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const handleSearch = useDebounce((term: string) => {
     const params = new URLSearchParams(searchParams);

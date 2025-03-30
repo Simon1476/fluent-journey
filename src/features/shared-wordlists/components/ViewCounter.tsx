@@ -10,7 +10,7 @@ interface ViewCounterProps {
 
 export default function ViewCounter({ id }: ViewCounterProps) {
   const [viewCount, setViewCount] = useState(0);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     startTransition(async () => {
