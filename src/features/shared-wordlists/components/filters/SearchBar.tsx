@@ -21,7 +21,7 @@ export function SearchBar({ placeholder }: { placeholder?: string }) {
     }
 
     startTransition(() => {
-      router.push(`?${params.toString()}`);
+      router.replace(`?${params.toString()}`);
     });
   }, 300);
 
