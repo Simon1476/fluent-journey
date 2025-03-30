@@ -28,7 +28,7 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                EduPath
+                Fluent Journey
               </span>
             </Link>
           </div>
@@ -86,7 +86,7 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-48 shadow-lg border border-gray-200 dark:border-gray-800"
+                  className="w-48 shadow-lg border border-gray-200 dark:border-gray-800 bg-white"
                 >
                   <DropdownMenuItem
                     className={cn(
@@ -96,13 +96,16 @@ const Navbar = () => {
                   >
                     프로필 설정
                   </DropdownMenuItem>
+
                   <DropdownMenuItem
                     className={cn(
                       "cursor-pointer focus:bg-gray-100 focus:text-gray-900",
                       "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
                     )}
                   >
-                    학습 통계
+                    <Link href="/profile" className="w-full">
+                      내 프로필
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className={cn(
@@ -110,7 +113,7 @@ const Navbar = () => {
                       "data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900"
                     )}
                   >
-                    <Link href="/word/lists/create" className="w-full">
+                    <Link href="/create-set" className="w-full">
                       단어장 생성
                     </Link>
                   </DropdownMenuItem>
