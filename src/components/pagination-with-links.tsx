@@ -52,7 +52,15 @@ export function PaginationWithLinks({
       for (let i = 1; i <= totalPageCount; i++) {
         items.push(
           <PaginationItem key={i}>
-            <PaginationLink href={buildLink(i)} isActive={page === i}>
+            <PaginationLink
+              href={buildLink(i)}
+              isActive={page === i}
+              className={`border-none  ${
+                page === i
+                  ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                  : "hover:bg-indigo-50 hover:text-indigo-700"
+              }`}
+            >
               {i}
             </PaginationLink>
           </PaginationItem>

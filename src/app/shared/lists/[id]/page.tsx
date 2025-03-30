@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, MessageCircle, BookOpen, Share2, Download } from "lucide-react";
 import { redirect } from "next/navigation";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getDisplayName } from "@/lib/utils";
 import ViewCounter from "@/features/shared-wordlists/components/ViewCounter";
 import { CommentSection } from "@/features/shared-wordlists/components/CommentSection";
 import { getCommentsByWordlistId } from "@/features/shared-wordlists/server/db/comments";
@@ -62,7 +62,7 @@ export default async function SharedListDetailPage({
                 </Avatar>
                 <div>
                   <p className="font-medium text-sm sm:text-base">
-                    {sharedList.user.name}
+                    {getDisplayName(session.user.nickname, session.user.id)}
                   </p>
                   <p className="text-xs opacity-80">
                     {formatDate(sharedList.createdAt)}

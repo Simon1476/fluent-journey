@@ -12,12 +12,13 @@ import {
 import { CommentForm } from "./CommentForm";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getDisplayName } from "@/lib/utils";
 import { useUserId } from "@/hooks/use-userId";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import DeleteCommentAlertDialogContent from "./DeleteCommentAlertDialogContent";
 import CustomPagination from "@/components/CustomPagination";
 import { differenceInSeconds } from "date-fns";
+import { useSession } from "next-auth/react";
 
 interface User {
   id: string;
@@ -42,6 +43,7 @@ interface Props {
 const ITEMS_PER_PAGE = 10;
 
 export function CommentSection({ comments, listId }: Props) {
+  const { data: session } = useSession();
   const userId = useUserId();
   const [editComment, setEditComment] = useState<{
     id: string;
@@ -87,7 +89,13 @@ export function CommentSection({ comments, listId }: Props) {
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium">{comment.user.name}</span>
+                  {session ? (
+                    <span className="font-medium">
+                      {getDisplayName(session.user.nickname, session.user.id)}
+                    </span>
+                  ) : (
+                    <span>{"익명의 사용자"}</span>
+                  )}
                   <span className="text-xs text-gray-500">
                     {formatDate(comment.updatedAt)}
                     {comment.createdAt !== comment.updatedAt &&

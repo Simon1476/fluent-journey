@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { cn, getDisplayName } from "@/lib/utils";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -75,11 +75,11 @@ const Navbar = () => {
                         className="object-cover"
                       />
                       <AvatarFallback>
-                        {session.user.nickname || "U"}
+                        {getDisplayName(session.user.nickname, session.user.id)}
                       </AvatarFallback>
                     </Avatar>
                     <span className="max-w-[100px] truncate">
-                      {session.user?.nickname || "사용자"}
+                      {getDisplayName(session.user.nickname, session.user.id)}
                     </span>
                     <ChevronDown size={16} />
                   </Button>
