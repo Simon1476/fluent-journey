@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔤 Fluent-journey
 
-## Getting Started
+자신만의 단어장을 만들고 단어를 등록하여 공부할 수 있는 웹 애플리케이션입니다. 다른 사용자들이 볼 수 있도록 단어장을 공유할 수 있습니다.
 
-First, run the development server:
+## 🚀 기능 소개
+
+- 단어장 생성하기
+- 단어장 공유 및 취소 하기
+- 공유 단어장 조회
+- 공유 단어장 좋아요 및 즐겨찾기
+- 각 공유 단어장 사용자 댓글 등록
+- 단어장 플래쉬 카드 테스트
+- 로그인 및 사용자 프로필 조회
+
+## 🛠 기술 스택
+
+- Frontend: Next.js, React, Tailwind CSS
+
+- Backend: Prisma, Next.js API Routes
+
+- 인증: Auth.js (Kakao 로그인)
+
+- 배포: Vercel
+
+## 📂 프로젝트 구조
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+src/
+├── actions/
+│ └── authActions.ts # 인증 관련 서버 액션
+│
+├── app/
+│ ├── (auth)/
+│ │ └── signin/
+│ │ └── page.tsx # 로그인 페이지
+│ ├── api/
+│ │ ├── auth/
+│ │ │ └── [...nextauth]/
+│ │ │ └── route.ts # NextAuth API 라우트
+│ │ └── user-id/
+│ │ └── route.ts # 사용자 ID API
+│ ├── create-set/
+│ │ └── page.tsx # 단어장 생성 페이지
+│ ├── profile/
+│ │ └── page.tsx # 프로필 페이지
+│ ├── shared/
+│ │ └── lists/
+│ │ ├── [id]/
+│ │ │ └── page.tsx # 공유 단어장 상세 페이지
+│ │ └── page.tsx # 공유 단어장 목록 페이지
+│ ├── word/
+│ │ ├── lists/
+│ │ │ ├── [id]/
+│ │ │ │ └── page.tsx # 단어장 상세 페이지
+│ │ │ └── page.tsx # 단어장 목록 페이지
+│ │ └── page.tsx # 단어 학습 페이지
+│ ├── globals.css # 전역 스타일
+│ ├── layout.tsx # 루트 레이아웃
+│ └── page.tsx # 홈페이지
+│
+├── components/
+│ ├── ui/ # ShadCN UI 컴포넌트
+│ │ ├── alert-dialog.tsx
+│ │ ├── avatar.tsx
+│ │ ├── badge.tsx
+│ │ ├── button.tsx
+│ │ └── ...
+│ ├── layout/ # 레이아웃 컴포넌트
+│ │ └── navbar/
+│ │ └── navbar.tsx # 네비게이션 바
+│ ├── CustomPagination.tsx # 커스텀 페이지네이션
+│ ├── Flashcards.tsx # 플래시카드 컴포넌트
+│ └── pagination-with-links.tsx # 링크 페이지네이션
+│
+├── features/ # 기능별 모듈화
+│ ├── profile/
+│ │ ├── components/
+│ │ └── server/
+│ │ └── db/
+│ ├── shared-wordlists/
+│ │ ├── components/
+│ │ └── server/
+│ │ ├── actions/
+│ │ └── db/
+│ └── wordlists/
+│  ├── components/
+│  └── server/
+│  └── db/
+│
+├── lib/ # 유틸리티 함수
+│ ├── prisma.ts
+│ └── utils.ts
+│
+├── types/ # 타입 정의
+│ ├── googleProfile.ts
+│ └── kakaoProfile.ts
+│
+└── auth.ts # 인증 설정
+이 구조는 Next.js App Router를 사용하며, 기능별로 모듈화된 구조를 가지고 있습니다. 또한 ShadCN UI 컴포넌트와 Lucide 아이콘을 사용하는 가이드라인을 포함하고 있습니다.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ 주요 기능
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+단어장 생성 - 단어 뜻과 예문(선택사항)을 등록 가능, 단어 음성 듣기 가능
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+공유 단어장 검색 - 단어장 제목, 태그 및 즐겨찾기 여부로 검색
 
-## Learn More
+사용자 프로필 - 사용자가 공유한 단어장, 사용자 단어장, 즐겨찾기한 단어장 조회 가능
 
-To learn more about Next.js, take a look at the following resources:
+### 단어장 생성
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+![Image](https://github.com/user-attachments/assets/6da47df1-b75c-44e5-bcd4-86d537420a74)

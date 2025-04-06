@@ -226,13 +226,13 @@ export async function deleteWordlist(listId: string, userId: string) {
     }
 
     return {
-      error: true,
+      error: false,
       message: "단어장이 삭제되었습니다.",
     };
   } catch (error) {
     console.error("Failed to delete wordlist:", error);
     return {
-      error: false,
+      error: true,
       message: "단어장 삭제 중 오류가 발생했습니다.",
     };
   }
