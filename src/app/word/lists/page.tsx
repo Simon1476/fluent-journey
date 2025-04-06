@@ -35,7 +35,7 @@ export default async function WordListsPage() {
         {/* Header Section with Statistics */}
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-            My Vocabulary Collections
+            내 단어장
           </h1>
 
           <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
@@ -218,7 +218,7 @@ export default async function WordListsPage() {
             <p className="text-gray-500 mb-6">
               단어장을 만들어 학습을 시작해보세요
             </p>
-            <Link href="/word/lists/create">
+            <Link href="/create-set">
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />첫 단어장 만들기
               </Button>
