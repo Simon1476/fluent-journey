@@ -48,7 +48,7 @@ export default async function WordListsPage() {
               <p className="text-2xl font-bold text-gray-800">
                 {lists?.length || 0}
               </p>
-              <p className="text-sm text-gray-500">Total Lists</p>
+              <p className="text-sm text-gray-500">전체 단어장</p>
             </div>
 
             <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
@@ -60,7 +60,7 @@ export default async function WordListsPage() {
               <p className="text-2xl font-bold text-gray-800">
                 {lists?.reduce((sum, list) => sum + list.words.length, 0) || 0}
               </p>
-              <p className="text-sm text-gray-500">Total Words</p>
+              <p className="text-sm text-gray-500">전체 단어수</p>
             </div>
 
             <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
@@ -72,7 +72,7 @@ export default async function WordListsPage() {
               <p className="text-2xl font-bold text-gray-800">
                 {lists?.filter((list) => list.isPublic).length || 0}
               </p>
-              <p className="text-sm text-gray-500">Shared Lists</p>
+              <p className="text-sm text-gray-500">공유된 단어장</p>
             </div>
           </div>
 
@@ -213,15 +213,14 @@ export default async function WordListsPage() {
               <Book className="w-8 h-8 text-blue-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              No Vocabulary Lists Yet
+              아직 단어장이 없습니다
             </h3>
             <p className="text-gray-500 mb-6">
-              Create your first vocabulary list to start learning
+              단어장을 만들어 학습을 시작해보세요
             </p>
             <Link href="/word/lists/create">
               <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First List
+                <Plus className="w-4 h-4 mr-2" />첫 단어장 만들기
               </Button>
             </Link>
           </div>
