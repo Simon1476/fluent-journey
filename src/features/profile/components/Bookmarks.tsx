@@ -36,11 +36,11 @@ export function Bookmarks({ bookmarks }: Props) {
         <Card className="text-center py-16 bg-white shadow-lg border-none">
           <CardContent className="pt-6">
             <p className="text-gray-500 text-lg">
-              You havent bookmarked any word lists yet.
+              아직 즐겨찾기한 단어장이 없습니다.
             </p>
             <Link href="/shared/lists">
               <Button className="mt-6 bg-blue-600 hover:bg-blue-700">
-                Browse Shared Lists
+                공유 단어장 둘러보기
               </Button>
             </Link>
           </CardContent>
