@@ -1,18 +1,15 @@
 "use client";
 
 import React from "react";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { handleGoogleSignin, handleKakaoSignin } from "@/actions/authActions";
+import { handleKakaoSignin } from "@/actions/authActions";
 
 export default function LoginPage() {
   return (
@@ -21,7 +18,7 @@ export default function LoginPage() {
         <Card className="w-full">
           <CardHeader className="space-y-2 text-center">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              EduPath에 오신 것을 환영합니다
+              Fluent Journey에 오신 것을 환영합니다
             </CardTitle>
             <CardDescription className="text-gray-500">
               소셜 계정으로 간편하게 시작하세요
@@ -30,7 +27,7 @@ export default function LoginPage() {
 
           <CardContent className="space-y-4">
             {/* 소셜 로그인 버튼 */}
-            <form action={handleGoogleSignin}>
+            {/* <form action={handleGoogleSignin}>
               <Button
                 variant="outline"
                 className="w-full h-12 relative"
@@ -58,7 +55,7 @@ export default function LoginPage() {
                 </div>
                 Google로 계속하기
               </Button>
-            </form>
+            </form> */}
 
             <form action={handleKakaoSignin}>
               <Button
@@ -77,24 +74,24 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <Separator />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-white px-2 text-gray-500">또는</span>
               </div>
-            </div>
+            </div> */}
 
-            <Button
+            {/* <Button
               className="w-full h-12 relative bg-blue-600 hover:bg-blue-700"
               onClick={() => signIn("email", { callbackUrl: "/" })}
             >
               이메일로 계속하기
-            </Button>
+            </Button> */}
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-2 text-center text-sm text-gray-600">
+          {/* <CardFooter className="flex flex-col space-y-2 text-center text-sm text-gray-600">
             <p>
               계정이 없으신가요?{" "}
               <a href="/signup" className="text-blue-600 hover:underline">
@@ -112,7 +109,7 @@ export default function LoginPage() {
               </a>
               에 동의하는 것으로 간주됩니다.
             </p>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
       </div>
     </div>
