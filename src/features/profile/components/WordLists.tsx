@@ -43,7 +43,7 @@ export function WordLists({ wordLists }: Props) {
         <Card className="text-center py-16 bg-white shadow-lg border-none">
           <CardContent className="pt-6">
             <p className="text-gray-500 text-lg">아직 단어장이 없습니다.</p>
-            <Link href="/wordlists/create">
+            <Link href="/create-set">
               <Button className="mt-6 bg-blue-600 hover:bg-blue-700">
                 <Plus className="mr-2 h-4 w-4" /> 단어장 생성하기
               </Button>
@@ -70,13 +70,13 @@ export function WordLists({ wordLists }: Props) {
                         : "bg-gray-100 text-gray-800"
                     }
                   >
-                    {list.isPublic ? "Public" : "Private"}
+                    {list.isPublic ? "공유중" : "비공개"}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="pb-2 pt-4">
                 <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                  {list.description || "No description"}
+                  {list.description && <p>{list.description}</p>}
                 </p>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {list.tags.map((tag, i) => (
