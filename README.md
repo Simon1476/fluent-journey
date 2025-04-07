@@ -22,6 +22,33 @@
 
 - 배포: Vercel
 
+## 🚀 시작하기
+
+```bash
+# pnpm 설치 (없는 경우)
+npm install -g pnpm
+
+# 저장소 클론
+git clone https://github.com/Simon1476/fluent-journey.git
+
+# 프로젝트 디렉토리로 이동
+cd fluent-journey
+
+# 의존성 설치
+pnpm install
+
+# 환경 변수 설정
+ .env.example 파일을 복사하여 .env.local 파일 생성
+
+# 개발 서버 실행
+pnpm run dev
+```
+
+💡 환경 변수 설정은 .env.example 파일을 복사하여 .env.local 파일을 만들고 필요한 값들을 입력해주세요.
+
+- [Auth-Secret 설정 가이드](https://authjs.dev/getting-started/installation)
+- [카카오 환경변수 설정 가이드](https://tasty-meerkat-c0d.notion.site/Auth-js-191d4ecd0c1f80bda80ad231769678c3)
+
 ## 📂 프로젝트 구조
 
 ```bash
@@ -110,3 +137,11 @@ src/
 ### 단어장 생성
 
 ![Image](https://github.com/user-attachments/assets/6da47df1-b75c-44e5-bcd4-86d537420a74)
+
+### 단어장 공유
+
+![Image](https://github.com/user-attachments/assets/22478216-1bb9-4ddc-9678-fb378114543f)
+
+### 사용자 프로필
+
+![Image](https://github.com/user-attachments/assets/592557f3-4fe7-45cc-9696-da7a3a97ba4e)
