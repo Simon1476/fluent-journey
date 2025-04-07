@@ -16,11 +16,13 @@ export default function LoginPage() {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-4">
         <Card className="w-full">
-          <CardHeader className="space-y-2 text-center">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-              Fluent Journey에 오신 것을 환영합니다
+          <CardHeader className="space-y-3 text-center pb-6">
+            <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent leading-tight">
+              Fluent Journey
+              <br />
+              오신 것을 환영합니다
             </CardTitle>
-            <CardDescription className="text-gray-500">
+            <CardDescription className="text-gray-500 text-lg">
               소셜 계정으로 간편하게 시작하세요
             </CardDescription>
           </CardHeader>
