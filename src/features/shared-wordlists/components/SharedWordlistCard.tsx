@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { toggleBookmark } from "@/features/shared-wordlists/server/actions/bookmark";
 import { toggleLike } from "@/features/shared-wordlists/server/actions/like";
 import { Button } from "@/components/ui/button";
+import { getDisplayName } from "@/lib/utils";
 
 interface Props {
   list: {
@@ -140,7 +141,7 @@ export function SharedWordlistCard({
           </div>
           <span className="flex items-center gap-1 text-xs">
             <User className="w-3 h-3 text-gray-400" />
-            {list.user.name || "익명의 사용자"}
+            {getDisplayName(list.user.name ?? "", list.id)}
           </span>
         </div>
       </CardContent>
