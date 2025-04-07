@@ -436,6 +436,7 @@ async function getWordlistsInternal(userId: string) {
         select: {
           id: true,
           name: true,
+          tags: true,
         },
       },
     },

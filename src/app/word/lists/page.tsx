@@ -19,6 +19,7 @@ import { DeleteWordListButton } from "@/features/wordlists/components/DeleteWord
 import DeleteSharedListAlertDialogContent from "@/features/wordlists/components/DeleteSharedListAlertDialogContent";
 import AddToSharedWordListForm from "@/features/wordlists/components/AddToSharedWordListDialogContent";
 import WordListModal from "@/features/wordlists/components/form/WordListModal";
+import ReShareWordListButton from "@/features/wordlists/components/ReShareWordListButton";
 
 export default async function WordListsPage() {
   const session = await auth();
@@ -177,10 +178,17 @@ export default async function WordListsPage() {
                       </div>
                     ) : (
                       <div className="flex-1">
-                        <AddToSharedWordListForm
-                          listTitle={list.name}
-                          listId={list.id}
-                        />
+                        {list.sharedWordList ? (
+                          <ReShareWordListButton
+                            listId={list.id}
+                            sharedWordList={list.sharedWordList}
+                          />
+                        ) : (
+                          <AddToSharedWordListForm
+                            listTitle={list.name}
+                            listId={list.id}
+                          />
+                        )}
                       </div>
                     )}
 

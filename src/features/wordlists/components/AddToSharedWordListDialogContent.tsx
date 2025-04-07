@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Book, Plus } from "lucide-react";
+import { Book, Loader2, Plus } from "lucide-react";
 
 const TAGS = [
   { id: "TOEIC", color: "bg-blue-100 text-blue-700 hover:bg-blue-200" },
@@ -47,9 +47,11 @@ const TAGS = [
 export default function AddToSharedWordListForm({
   listTitle,
   listId,
+  isReShare = false,
 }: {
   listTitle: string;
   listId: string;
+  isReShare?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -62,6 +64,10 @@ export default function AddToSharedWordListForm({
       tags: [],
     },
   });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   async function onSubmit(values: z.infer<typeof addToSharedWordListSchema>) {
     const data = await addToSharedlist(listId, values);
@@ -83,10 +89,20 @@ export default function AddToSharedWordListForm({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+          className={cn(
+            "border-blue-200",
+            isReShare
+              ? "bg-purple-50 hover:bg-purple-100"
+              : "bg-blue-50 hover:bg-blue-100"
+          )}
         >
-          <Book className="w-4 h-4 mr-2 text-blue-600" />
-          단어장 공유하기
+          <Book
+            className={cn(
+              "w-4 h-4 mr-2",
+              isReShare ? "text-purple-600" : "text-blue-600"
+            )}
+          />
+          {isReShare ? "단어장 재공유하기" : "단어장 공유하기"}
         </Button>
       </DialogTrigger>
 
@@ -181,8 +197,19 @@ export default function AddToSharedWordListForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              단어장 공유하기
+            <Button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-300"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  공유 중...
+                </>
+              ) : (
+                "단어장 공유하기"
+              )}
             </Button>
           </form>
         </Form>
