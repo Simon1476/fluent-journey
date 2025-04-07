@@ -65,7 +65,7 @@ export function SharedWordListCard({
       </CardHeader>
       <CardContent className="pb-2 pt-4 space-y-3">
         <p className="text-sm text-gray-600 line-clamp-2">
-          {list.description || "설명이 없습니다"}
+          {list.description && <p>{list.description}</p>}
         </p>
         <div className="flex flex-wrap gap-1">
           {list.tags.map((tag, i) => (
