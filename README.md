@@ -52,6 +52,7 @@ pnpm run dev
 
 - [Auth-Secret 설정 가이드](https://authjs.dev/getting-started/installation)
 - [카카오 환경변수 설정 가이드](https://tasty-meerkat-c0d.notion.site/Auth-js-191d4ecd0c1f80bda80ad231769678c3)
+- [구글 환경변수 설정 가이드](https://tasty-meerkat-c0d.notion.site/Google-1ced4ecd0c1f80e8a1b2dc27f8d9da92)
 
 ## 📂 프로젝트 구조
 
@@ -127,7 +128,6 @@ src/
 │ └── kakaoProfile.ts
 │
 └── auth.ts # 인증 설정
-이 구조는 Next.js App Router를 사용하며, 기능별로 모듈화된 구조를 가지고 있습니다. 또한 ShadCN UI 컴포넌트와 Lucide 아이콘을 사용하는 가이드라인을 포함하고 있습니다.
 ```
 
 ## ✨ 주요 기능
@@ -145,6 +145,10 @@ src/
 ### 단어장 공유
 
 ![Image](https://github.com/user-attachments/assets/22478216-1bb9-4ddc-9678-fb378114543f)
+
+### 공유 단어장 검색(키워드, 태그, 즐겨찾기)
+
+![Image](https://github.com/user-attachments/assets/7d2db55c-3922-4141-a1ea-edb54aae3b72)
 
 ### 사용자 프로필
 
