@@ -150,6 +150,10 @@ src/
 
 ![Image](https://github.com/user-attachments/assets/7d2db55c-3922-4141-a1ea-edb54aae3b72)
 
+### 단어 테스트
+
+![Image](https://github.com/user-attachments/assets/7d6e4619-b422-4735-8189-97a1e3f714e6)
+
 ### 사용자 프로필
 
 ![Image](https://github.com/user-attachments/assets/592557f3-4fe7-45cc-9696-da7a3a97ba4e)
