@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { handleKakaoSignin } from "@/actions/authActions";
+import { handleGoogleSignin, handleKakaoSignin } from "@/actions/authActions";
 
 export default function LoginPage() {
   return (
@@ -29,7 +29,7 @@ export default function LoginPage() {
 
           <CardContent className="space-y-4">
             {/* 소셜 로그인 버튼 */}
-            {/* <form action={handleGoogleSignin}>
+            <form action={handleGoogleSignin}>
               <Button
                 variant="outline"
                 className="w-full h-12 relative"
@@ -57,7 +57,7 @@ export default function LoginPage() {
                 </div>
                 Google로 계속하기
               </Button>
-            </form> */}
+            </form>
 
             <form action={handleKakaoSignin}>
               <Button
